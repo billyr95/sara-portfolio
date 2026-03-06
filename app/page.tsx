@@ -14,7 +14,7 @@ const mockProjects: Project[] = [
     _id: '1',
     title: 'Hellstar Campaign',
     slug: 'hellstar-campaign',
-    description: 'A visceral exploration of streetwear aesthetics and underground culture. Shot across three cities over two weeks, this campaign captures the raw energy of youth rebellion.',
+    description: 'Random Words about your project go here',
     aspectRatio: '16:9',
     thumbnail: {
       type: 'video',
@@ -32,7 +32,7 @@ const mockProjects: Project[] = [
     _id: '2',
     title: 'Neon Dreams',
     slug: 'neon-dreams',
-    description: 'An editorial series exploring the intersection of technology and humanity in modern urban environments.',
+    description: 'Random Words about your project go here',
     aspectRatio: '9:16',
     thumbnail: {
       type: 'image',
@@ -48,7 +48,7 @@ const mockProjects: Project[] = [
     _id: '3',
     title: 'Studio Sessions',
     slug: 'studio-sessions',
-    description: 'Intimate portraits captured in controlled studio environments. Each frame tells a story of vulnerability and strength.',
+    description: 'Random Words about your project go here',
     aspectRatio: '1:1',
     thumbnail: {
       type: 'image',
@@ -64,7 +64,7 @@ const mockProjects: Project[] = [
     _id: '4',
     title: 'Motion Study',
     slug: 'motion-study',
-    description: 'Exploring human movement through high-speed capture and post-production manipulation.',
+    description: 'Random Words about your project go here',
     aspectRatio: '16:9',
     thumbnail: {
       type: 'video',
@@ -81,7 +81,7 @@ const mockProjects: Project[] = [
     _id: '5',
     title: 'Desert Mirage',
     slug: 'desert-mirage',
-    description: 'A fashion story set against the stark beauty of the Mojave. Minimalism meets maximalist styling.',
+    description: 'Random Words about your project go here',
     aspectRatio: '9:16',
     thumbnail: {
       type: 'image',
@@ -97,7 +97,7 @@ const mockProjects: Project[] = [
     _id: '6',
     title: 'Urban Decay',
     slug: 'urban-decay',
-    description: 'Finding beauty in abandoned spaces. A meditation on time, memory, and the impermanence of human creation.',
+    description: 'Random Words about your project go here',
     aspectRatio: '1:1',
     thumbnail: {
       type: 'image',
@@ -113,7 +113,7 @@ const mockProjects: Project[] = [
     _id: '7',
     title: 'Chromatic',
     slug: 'chromatic',
-    description: 'An exploration of color theory through portraiture. Each image limited to a single dominant hue.',
+    description: 'Random Words about your project go here.',
     aspectRatio: '16:9',
     thumbnail: {
       type: 'image',
@@ -129,7 +129,7 @@ const mockProjects: Project[] = [
     _id: '8',
     title: 'Night Shift',
     slug: 'night-shift',
-    description: 'Documentary series following night workers across different industries. Real stories, real people.',
+    description: 'Random Words about your project go here',
     aspectRatio: '9:16',
     thumbnail: {
       type: 'video',
@@ -146,7 +146,7 @@ const mockProjects: Project[] = [
     _id: '9',
     title: 'Botanical',
     slug: 'botanical',
-    description: 'Macro photography series examining the intricate patterns and textures found in plant life.',
+    description: 'Random Words about your project go here',
     aspectRatio: '1:1',
     thumbnail: {
       type: 'image',
@@ -162,7 +162,7 @@ const mockProjects: Project[] = [
     _id: '10',
     title: 'Concrete Jungle',
     slug: 'concrete-jungle',
-    description: 'Urban architecture series exploring geometric patterns in city landscapes.',
+    description: 'Random Words about your project go here',
     aspectRatio: '16:9',
     thumbnail: {
       type: 'image',
@@ -178,7 +178,7 @@ const mockProjects: Project[] = [
     _id: '11',
     title: 'Silk Road',
     slug: 'silk-road',
-    description: 'Fashion meets cultural heritage in this East-meets-West editorial.',
+    description: 'Random Words about your project go here',
     aspectRatio: '9:16',
     thumbnail: {
       type: 'image',
@@ -194,7 +194,7 @@ const mockProjects: Project[] = [
     _id: '12',
     title: 'Monochrome',
     slug: 'monochrome',
-    description: 'Black and white portrait series exploring light, shadow, and form.',
+    description: 'Random Words about your project go here',
     aspectRatio: '1:1',
     thumbnail: {
       type: 'image',
