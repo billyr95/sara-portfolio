@@ -49,15 +49,17 @@ function MediaViewer({ item, isActive }: { item: MediaItem; isActive: boolean })
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
+  const tags = project.tags ?? [];
+  const media = project.media ?? [];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowRight') {
-        setActiveIndex((prev) => (prev + 1) % project.media.length);
+        setActiveIndex((prev) => (prev + 1) % media.length);
       }
       if (e.key === 'ArrowLeft') {
-        setActiveIndex((prev) => (prev - 1 + project.media.length) % project.media.length);
+        setActiveIndex((prev) => (prev - 1 + media.length) % media.length);
       }
     };
 
@@ -68,7 +70,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
-  }, [onClose, project.media.length]);
+  }, [onClose, media.length]);
 
   return (
     <motion.div
@@ -94,14 +96,14 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       </motion.button>
 
       {/* Navigation arrows */}
-      {project.media.length > 1 && (
+      {media.length > 1 && (
         <>
           <motion.button
             className="fixed left-5 top-1/2 -translate-y-1/2 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-neutral-100 backdrop-blur-sm hover:bg-neutral-200 transition-colors"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            onClick={() => setActiveIndex((prev) => (prev - 1 + project.media.length) % project.media.length)}
+            onClick={() => setActiveIndex((prev) => (prev - 1 + media.length) % media.length)}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2">
               <polyline points="15,18 9,12 15,6" />
@@ -112,7 +114,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            onClick={() => setActiveIndex((prev) => (prev + 1) % project.media.length)}
+            onClick={() => setActiveIndex((prev) => (prev + 1) % media.length)}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2">
               <polyline points="9,18 15,12 9,6" />
@@ -140,21 +142,23 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.3 }}
               >
-                <MediaViewer item={project.media[activeIndex]} isActive={true} />
+                {media[activeIndex] && (
+                  <MediaViewer item={media[activeIndex]} isActive={true} />
+                )}
               </motion.div>
             </AnimatePresence>
           </div>
         </motion.div>
 
         {/* Media indicators */}
-        {project.media.length > 1 && (
+        {media.length > 1 && (
           <motion.div 
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            {project.media.map((_, index) => (
+            {media.map((_, index) => (
               <button
                 key={index}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
@@ -181,7 +185,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
-                {project.tags.map((tag) => (
+                {tags.map((tag) => (
                   <span 
                     key={tag}
                     className="text-xs uppercase tracking-[0.2em] text-neutral-500 border border-white/20 px-3 py-1"
@@ -225,18 +229,18 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   </div>
                   <div className="flex justify-between">
                     <dt>Media</dt>
-                    <dd className="text-neutral-900">{project.media.length} items</dd>
+                    <dd className="text-neutral-900">{media.length} items</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt>Category</dt>
-                    <dd className="text-neutral-900">{project.tags[0]}</dd>
+                    <dd className="text-neutral-900">{tags[0] ?? '—'}</dd>
                   </div>
                 </dl>
               </div>
             </motion.div>
 
             {/* Gallery thumbnails */}
-            {project.media.length > 1 && (
+            {media.length > 1 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -244,7 +248,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               >
                 <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-6">Gallery</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {project.media.map((item, index) => (
+                  {media.map((item, index) => (
                     <button
                       key={index}
                       className={`relative aspect-square overflow-hidden transition-all duration-300 ${

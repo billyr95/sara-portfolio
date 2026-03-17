@@ -249,7 +249,7 @@ function GridItem({
         transition={{ duration: 0.3 }}
       >
         <div className="flex items-center gap-2 mb-2">
-          {project.tags.slice(0, 2).map((tag) => (
+          {(project.tags ?? []).slice(0, 2).map((tag) => (
             <span 
               key={tag} 
               className="text-[10px] uppercase tracking-widest text-white/90 bg-black/30 px-2 py-1 rounded-full backdrop-blur-sm"
