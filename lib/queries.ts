@@ -51,3 +51,11 @@ export const workPageQuery = groq`
     filters
   }
 `;
+
+export const aboutPageQuery = groq`
+  *[_type == "aboutPage"][0] {
+    "photoUrl": photo.asset->url,
+    bio,
+    email
+  }
+`;
