@@ -1,28 +1,58 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import ProjectModal from '@/components/ProjectModal';
-import PortfolioGrid from '@/components/PortfolioGrid';
-import { Project } from '@/types';
 import UnicornScene from 'unicornstudio-react/next';
 
-export default function HomeWithLanding({ projects }: { projects: Project[] }) {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+interface HomePageData {
+  backgroundVideoUrl?: string;
+  backgroundVideoPosterUrl?: string;
+  headline?: string;
+  subheadline?: string;
+  ctaLabel?: string;
+  ctaLink?: string;
+  navLinks?: NavLink[];
+}
+
+interface Props {
+  data: HomePageData | null;
+}
+
+export default function HomeWithLanding({ data }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Fallbacks if Sanity doc not yet created
+  const headline = data?.headline || 'Creative Direction, Costume & Film';
+  const subheadline = data?.subheadline || 'Visual storytelling through clothing, movement & light';
+  const ctaLabel = data?.ctaLabel || 'View Work';
+  const ctaLink = data?.ctaLink || '/work';
+  const navLinks = data?.navLinks || [
+    { label: 'Work', href: '/work' },
+    { label: 'Contact', href: 'mailto:hello@saralukaszewski.com' },
+  ];
+
   useEffect(() => {
-    setIsLoaded(true);
     if (videoRef.current) {
       videoRef.current.play().catch(() => {});
     }
   }, []);
 
   return (
-    <main style={{ backgroundColor: '#ffffff', minHeight: '100vh' }}>
-
+    <main
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#ffffff',
+        margin: 0,
+        padding: 0,
+        overflow: 'hidden',
+      }}
+    >
       {/* ── FIXED NAV ─────────────────────────────────────── */}
       <motion.nav
         initial={{ opacity: 0, y: -12 }}
@@ -40,8 +70,7 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
           padding: '28px 40px',
         }}
       >
-        {/* Logo / wordmark via UnicornScene */}
-        <div style={{ width: '160px', height: '52px' }}>
+        <div style={{ width: '260px', height: '80px' }}>
           <UnicornScene
             projectId="KBn7vDUSJdNibc47UYOd"
             sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.3/dist/unicornStudio.umd.js"
@@ -50,12 +79,8 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
           />
         </div>
 
-        {/* Links */}
         <div style={{ display: 'flex', gap: '36px', alignItems: 'center' }}>
-          {[
-            { label: 'Work', href: '/#work' },
-            { label: 'Contact', href: 'mailto:hello@saralukaszewski.com' },
-          ].map(({ label, href }) => (
+          {navLinks.map(({ label, href }) => (
             <a
               key={label}
               href={href}
@@ -79,10 +104,10 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
         </div>
       </motion.nav>
 
-      {/* ── HERO LANDING ──────────────────────────────────── */}
+      {/* ── HERO ──────────────────────────────────────────── */}
       <section
         style={{
-          minHeight: '100vh',
+          height: '100vh',
           display: 'flex',
           alignItems: 'stretch',
           padding: '20px',
@@ -99,7 +124,6 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
             borderRadius: '20px',
             overflow: 'hidden',
             backgroundColor: '#1a1a1a',
-            minHeight: 'calc(100vh - 40px)',
           }}
         >
           {/* Video */}
@@ -109,6 +133,7 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
             muted
             loop
             playsInline
+            poster={data?.backgroundVideoPosterUrl}
             style={{
               position: 'absolute',
               inset: 0,
@@ -116,19 +141,23 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
               height: '100%',
               objectFit: 'cover',
             }}
-          />
+          >
+            {data?.backgroundVideoUrl && (
+              <source src={data.backgroundVideoUrl} type="video/mp4" />
+            )}
+          </video>
 
-          {/* Gradient overlay for text legibility */}
+          {/* Gradient overlay */}
           <div
             style={{
               position: 'absolute',
               inset: 0,
               background:
-                'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.1) 50%, transparent 80%)',
+                'linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 45%, transparent 75%)',
             }}
           />
 
-          {/* Bottom-left text (mirroring reference screenshot) */}
+          {/* Bottom-left text */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
@@ -148,35 +177,36 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
                 margin: '0 0 10px 0',
                 lineHeight: 1.06,
                 letterSpacing: '-0.025em',
+                whiteSpace: 'pre-line',
               }}
             >
-              Creative Direction,
-              <br />
-              Costume &amp; Film
+              {headline}
             </h1>
-            <p
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 'clamp(14px, 1.6vw, 19px)',
-                fontWeight: 400,
-                color: 'rgba(245,240,232,0.72)',
-                margin: 0,
-                letterSpacing: '0.01em',
-              }}
-            >
-              Visual storytelling through clothing, movement &amp; light
-            </p>
+            {subheadline && (
+              <p
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 'clamp(14px, 1.6vw, 19px)',
+                  fontWeight: 400,
+                  color: 'rgba(245,240,232,0.72)',
+                  margin: 0,
+                  letterSpacing: '0.01em',
+                }}
+              >
+                {subheadline}
+              </p>
+            )}
           </motion.div>
 
-          {/* Bottom-right CTA pill */}
+          {/* Bottom-right CTA */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
             style={{ position: 'absolute', bottom: '58px', right: '52px' }}
           >
-            <a
-              href="#work"
+            <Link
+              href={ctaLink}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -191,7 +221,7 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
                 fontSize: '12px',
                 fontWeight: 500,
                 letterSpacing: '0.12em',
-                textTransform: 'uppercase',
+                textTransform: 'uppercase' as const,
                 textDecoration: 'none',
                 transition: 'background-color 0.25s',
                 fontFamily: "'DM Sans', sans-serif",
@@ -205,7 +235,7 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
                   'rgba(255,255,255,0.14)';
               }}
             >
-              View Work
+              {ctaLabel}
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path
                   d="M2 7h10M8 3l4 4-4 4"
@@ -215,97 +245,10 @@ export default function HomeWithLanding({ projects }: { projects: Project[] }) {
                   strokeLinejoin="round"
                 />
               </svg>
-            </a>
+            </Link>
           </motion.div>
         </motion.div>
       </section>
-
-      {/* ── WORK / PORTFOLIO GRID ─────────────────────────── */}
-      <section
-        id="work"
-        style={{
-          backgroundColor: '#ffffff',
-          paddingTop: '80px',
-          paddingBottom: '80px',
-        }}
-      >
-        {/* Section label */}
-        <div
-          style={{
-            paddingLeft: '40px',
-            paddingRight: '40px',
-            marginBottom: '48px',
-            display: 'flex',
-            alignItems: 'baseline',
-            gap: '20px',
-          }}
-        >
-          <h2
-            style={{
-              fontFamily: "'Instrument Serif', serif",
-              fontSize: 'clamp(28px, 4vw, 52px)',
-              fontWeight: 400,
-              color: '#0a0a0a',
-              margin: 0,
-              letterSpacing: '-0.02em',
-              lineHeight: 1,
-            }}
-          >
-            Selected Work
-          </h2>
-          <span
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '12px',
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: '#0a0a0a',
-              opacity: 0.35,
-              fontWeight: 500,
-            }}
-          >
-            {projects.length} projects
-          </span>
-        </div>
-
-        {/* Grid */}
-        <div style={{ paddingLeft: '40px', paddingRight: '40px' }}>
-          {projects.length > 0 ? (
-            <PortfolioGrid
-              projects={projects}
-              onProjectClick={setSelectedProject}
-              isLoaded={isLoaded}
-            />
-          ) : (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '80px 0',
-                color: '#999',
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-            >
-              <p style={{ fontSize: '16px' }}>No projects yet.</p>
-              <p style={{ fontSize: '13px', marginTop: '8px' }}>
-                Add projects in{' '}
-                <a href="/studio" style={{ textDecoration: 'underline', color: '#666' }}>
-                  Sanity Studio
-                </a>
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ── MODAL ─────────────────────────────────────────── */}
-      <AnimatePresence>
-        {selectedProject && (
-          <ProjectModal
-            project={selectedProject}
-            onClose={() => setSelectedProject(null)}
-          />
-        )}
-      </AnimatePresence>
     </main>
   );
 }

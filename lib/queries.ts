@@ -31,3 +31,23 @@ export const allProjectsQuery = groq`
     year
   }
 `;
+
+export const homePageQuery = groq`
+  *[_type == "homePage"][0] {
+    "backgroundVideoUrl": backgroundVideo.asset->url,
+    "backgroundVideoPosterUrl": backgroundVideoPoster.asset->url,
+    headline,
+    subheadline,
+    ctaLabel,
+    ctaLink,
+    navLinks,
+    seoTitle,
+    seoDescription
+  }
+`;
+
+export const workPageQuery = groq`
+  *[_type == "workPage"][0] {
+    filters
+  }
+`;
