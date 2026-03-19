@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { client } from '@/lib/sanity';
 import { allProjectsQuery, workPageQuery } from '@/lib/queries';
 import { Project } from '@/types';
@@ -18,7 +19,6 @@ export default async function WorkPage() {
     console.error('Sanity fetch error:', error);
   }
 
-  // Fallback filters if Sanity doc not yet created
   if (!filters.length) {
     filters = [
       { label: 'Creative Direction', value: 'Creative Direction' },
@@ -27,5 +27,9 @@ export default async function WorkPage() {
     ];
   }
 
-  return <WorkClient projects={projects} filters={filters} />;
+  return (
+    <Suspense fallback={null}>
+      <WorkClient projects={projects} filters={filters} />
+    </Suspense>
+  );
 }
