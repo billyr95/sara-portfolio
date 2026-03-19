@@ -59,3 +59,16 @@ export const aboutPageQuery = groq`
     email
   }
 `;
+
+export const contactPageQuery = groq`
+  *[_type == "contactPage"][0] {
+    heading,
+    subheading,
+    email,
+    instagramHandle,
+    extraLinks[] {
+      label,
+      url
+    }
+  }
+`;
