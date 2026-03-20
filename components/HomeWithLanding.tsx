@@ -51,12 +51,21 @@ export default function HomeWithLanding({ data, filters = [] }: Props) {
           overflow: 'hidden',
         }}
       >
-        <UnicornScene
-          projectId="KBn7vDUSJdNibc47UYOd"
-          sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.4/dist/unicornStudio.umd.js"
-          width="100%"
-          height="100%"
-        />
+        {isMobile ? (
+          <UnicornScene
+            projectId="Y5ffBsrKKBamRXBo5d4s"
+            sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.4/dist/unicornStudio.umd.js"
+            width="100%"
+            height="100%"
+          />
+        ) : (
+          <UnicornScene
+            projectId="KBn7vDUSJdNibc47UYOd"
+            sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.4/dist/unicornStudio.umd.js"
+            width="100%"
+            height="100%"
+          />
+        )}
       </div>
 
       {/* Discipline links — overlaid on the scene */}
@@ -66,7 +75,7 @@ export default function HomeWithLanding({ data, filters = [] }: Props) {
         transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position: 'absolute',
-          top: isMobile ? '72%' : '72%',
+          top: isMobile ? '68%' : '72%',
           left: 0,
           right: 0,
           zIndex: 10,
