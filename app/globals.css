@@ -73,3 +73,15 @@ body {
   height: 100% !important;
   object-fit: cover;
 }
+
+/* Force Unicorn Studio canvas to fill and scale responsively */
+[id^="unicorn-"] {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+[id^="unicorn-"] canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}

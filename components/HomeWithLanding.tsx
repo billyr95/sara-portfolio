@@ -48,6 +48,7 @@ export default function HomeWithLanding({ data, filters = [] }: Props) {
           width: '100%',
           height: '100%',
           zIndex: 0,
+          overflow: 'hidden',
         }}
       >
         <UnicornScene

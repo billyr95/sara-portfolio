@@ -4,6 +4,8 @@ import { allProjectsQuery, workPageQuery } from '@/lib/queries';
 import { Project } from '@/types';
 import WorkClient from '@/components/WorkClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function WorkPage() {
   let projects: Project[] = [];
   let filters: { label: string; value: string }[] = [];
@@ -28,7 +30,7 @@ export default async function WorkPage() {
   }
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#ffffff' }} />}>
       <WorkClient projects={projects} filters={filters} />
     </Suspense>
   );
