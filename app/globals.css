@@ -19,7 +19,7 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: #0a0a0a;
+  background-color: #ffffff;
   color: #0a0a0a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -60,4 +60,16 @@ body {
 :focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.5);
   outline-offset: 2px;
+}
+
+/* Force Unicorn Studio canvas to fill its container */
+[id^="unicorn-"] {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+[id^="unicorn-"] canvas {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
 }

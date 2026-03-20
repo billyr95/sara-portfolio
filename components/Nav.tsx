@@ -12,7 +12,6 @@ interface Filter {
 
 interface NavProps {
   filters?: Filter[];
-  /** Force light text (e.g. over dark video bg) */
   light?: boolean;
 }
 
@@ -45,7 +44,6 @@ export default function Nav({ filters, light = false }: NavProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -56,15 +54,13 @@ export default function Nav({ filters, light = false }: NavProps) {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
     setWorkOpen(false);
   }, [pathname]);
 
-  const isLight = light && !scrolled;
-  const textColor = isLight ? '#ffffff' : '#0a0a0a';
-  const textOpacity = isLight ? 0.75 : 0.5;
+  const textColor = '#0a0a0a';
+  const textOpacity = 0.5;
 
   const linkStyle = (active: boolean): React.CSSProperties => ({
     fontFamily: "'DM Sans', sans-serif",
@@ -101,9 +97,7 @@ export default function Nav({ filters, light = false }: NavProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: scrolled
-            ? 'rgba(255,255,255,0.94)'
-            : isLight ? 'transparent' : '#ffffff',
+          backgroundColor: scrolled ? 'rgba(255,255,255,0.94)' : '#ffffff',
           backdropFilter: scrolled ? 'blur(14px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
           borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
@@ -111,26 +105,27 @@ export default function Nav({ filters, light = false }: NavProps) {
         }}
       >
         {/* Wordmark */}
-        <Link
-          href="/"
-          style={{
-            fontFamily: "'Instrument Serif', serif",
-            fontSize: isMobile ? '17px' : '19px',
-            color: textColor,
-            textDecoration: 'none',
-            letterSpacing: '-0.015em',
-            opacity: pathname === '/' ? 1 : (isLight ? 0.9 : 0.85),
-            transition: 'opacity 0.2s',
-          }}
-        >
-          Sara Lukaszewski
-        </Link>
+<Link
+  href="/"
+  style={{
+    fontFamily: "'Instrument Serif', serif",
+    fontSize: isMobile ? '17px' : '19px',
+    color: textColor,
+    textDecoration: 'none',
+    letterSpacing: '-0.015em',
+    opacity: pathname === '/' ? 0 : 0.85,
+    pointerEvents: pathname === '/' ? 'none' : 'auto',
+    transition: 'opacity 0.2s',
+  }}
+>
+  Sara Lukaszewski
+</Link>
 
         {/* Desktop links */}
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '36px' }}>
 
-            {/* Work + dropdown */}
+            {/* Work + dropdown — no All option */}
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => setWorkOpen(o => !o)}
@@ -179,39 +174,7 @@ export default function Nav({ filters, light = false }: NavProps) {
                       zIndex: 200,
                     }}
                   >
-                    {/* All work */}
-                    <Link
-                      href="/work"
-                      onClick={() => setWorkOpen(false)}
-                      style={{
-                        display: 'block',
-                        padding: '9px 14px',
-                        borderRadius: '8px',
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: '12px',
-                        letterSpacing: '0.08em',
-                        textTransform: 'uppercase',
-                        color: '#0a0a0a',
-                        textDecoration: 'none',
-                        opacity: 0.5,
-                        transition: 'background 0.15s, opacity 0.15s',
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)';
-                        e.currentTarget.style.opacity = '1';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                        e.currentTarget.style.opacity = '0.5';
-                      }}
-                    >
-                      All
-                    </Link>
-
-                    {/* Divider */}
-                    <div style={{ height: '1px', backgroundColor: 'rgba(0,0,0,0.06)', margin: '4px 8px' }} />
-
-                    {/* Filter links */}
+                    {/* Disciplines only — no All */}
                     {workFilters.map(({ label, value }) => (
                       <Link
                         key={value}
@@ -284,15 +247,15 @@ export default function Nav({ filters, light = false }: NavProps) {
           >
             <motion.span
               animate={mobileOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
-              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transformOrigin: 'center', transition: 'background-color 0.3s' }}
+              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transformOrigin: 'center' }}
             />
             <motion.span
               animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
-              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transition: 'background-color 0.3s' }}
+              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor }}
             />
             <motion.span
               animate={mobileOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
-              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transformOrigin: 'center', transition: 'background-color 0.3s' }}
+              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transformOrigin: 'center' }}
             />
           </button>
         )}
@@ -317,72 +280,45 @@ export default function Nav({ filters, light = false }: NavProps) {
               padding: '0 40px',
             }}
           >
-            {/* Close tap area */}
             <div
               style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '56px', cursor: 'pointer' }}
               onClick={() => setMobileOpen(false)}
             />
 
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {[
-                { label: 'Home', href: '/' },
-              ].map(({ label, href }) => (
+              <Link
+                href="/"
+                style={{
+                  fontFamily: "'Instrument Serif', serif",
+                  fontSize: '40px',
+                  color: '#0a0a0a',
+                  textDecoration: 'none',
+                  letterSpacing: '-0.02em',
+                  opacity: pathname === '/' ? 1 : 0.35,
+                  lineHeight: 1.2,
+                }}
+              >
+                Home
+              </Link>
+
+              {/* Disciplines directly — no Work parent link */}
+              {workFilters.map(({ label, value }) => (
                 <Link
-                  key={href}
-                  href={href}
+                  key={value}
+                  href={`/work?filter=${encodeURIComponent(value)}`}
                   style={{
                     fontFamily: "'Instrument Serif', serif",
                     fontSize: '40px',
                     color: '#0a0a0a',
                     textDecoration: 'none',
                     letterSpacing: '-0.02em',
-                    opacity: pathname === href ? 1 : 0.35,
+                    opacity: 0.35,
                     lineHeight: 1.2,
                   }}
                 >
                   {label}
                 </Link>
               ))}
-
-              {/* Work section */}
-              <div>
-                <Link
-                  href="/work"
-                  style={{
-                    fontFamily: "'Instrument Serif', serif",
-                    fontSize: '40px',
-                    color: '#0a0a0a',
-                    textDecoration: 'none',
-                    letterSpacing: '-0.02em',
-                    opacity: isWork ? 1 : 0.35,
-                    lineHeight: 1.2,
-                    display: 'block',
-                  }}
-                >
-                  Work
-                </Link>
-                {/* Filter sub-links */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '6px', paddingLeft: '4px' }}>
-                  {workFilters.map(({ label, value }) => (
-                    <Link
-                      key={value}
-                      href={`/work?filter=${encodeURIComponent(value)}`}
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: '13px',
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase',
-                        color: '#0a0a0a',
-                        textDecoration: 'none',
-                        opacity: 0.4,
-                        padding: '4px 0',
-                      }}
-                    >
-                      {label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
 
               {[
                 { label: 'About', href: '/about' },
