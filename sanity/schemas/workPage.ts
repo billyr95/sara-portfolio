@@ -9,7 +9,7 @@ export default defineType({
       name: 'filters',
       title: 'Filter Categories',
       type: 'array',
-      description: 'Controls the filter buttons on the work page. "All" is always added automatically.',
+      description: 'Controls the filter buttons on the work page.',
       of: [
         {
           type: 'object',
@@ -18,15 +18,31 @@ export default defineType({
               name: 'label',
               title: 'Button Label',
               type: 'string',
-              description: 'e.g. Creative Direction, Film, Styling',
               validation: (Rule) => Rule.required(),
             }),
             defineField({
               name: 'value',
               title: 'Filter Value',
               type: 'string',
-              description: 'Must match the tag used on projects exactly (case-sensitive)',
               validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'children',
+              title: 'Sub-filters',
+              type: 'array',
+              description: 'Optional subcategories shown in a nested dropdown',
+              of: [
+                {
+                  type: 'object',
+                  fields: [
+                    defineField({ name: 'label', title: 'Label', type: 'string' }),
+                    defineField({ name: 'value', title: 'Value', type: 'string' }),
+                  ],
+                  preview: {
+                    select: { title: 'label', subtitle: 'value' },
+                  },
+                },
+              ],
             }),
           ],
           preview: {
@@ -35,9 +51,24 @@ export default defineType({
         },
       ],
       initialValue: [
-        { label: 'Creative Direction', value: 'Creative Direction' },
-        { label: 'Film', value: 'Film' },
-        { label: 'Styling', value: 'Styling' },
+        { label: 'Creative Direction', value: 'Creative Direction', children: [] },
+        {
+          label: 'Film',
+          value: 'Film',
+          children: [
+            { label: 'Feature Films', value: 'Feature Films' },
+            { label: 'Short Films', value: 'Short Films' },
+          ],
+        },
+        {
+          label: 'Styling',
+          value: 'Styling',
+          children: [
+            { label: 'Commercials', value: 'Commercials' },
+            { label: 'Music Videos', value: 'Music Videos' },
+            { label: 'Editorial', value: 'Editorial' },
+          ],
+        },
       ],
     }),
   ],

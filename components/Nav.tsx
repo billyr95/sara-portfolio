@@ -5,9 +5,15 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
+interface SubFilter {
+  label: string;
+  value: string;
+}
+
 interface Filter {
   label: string;
   value: string;
+  children?: SubFilter[];
 }
 
 interface NavProps {
@@ -17,8 +23,23 @@ interface NavProps {
 
 const DEFAULT_FILTERS: Filter[] = [
   { label: 'Creative Direction', value: 'Creative Direction' },
-  { label: 'Film', value: 'Film' },
-  { label: 'Styling', value: 'Styling' },
+  {
+    label: 'Film',
+    value: 'Film',
+    children: [
+      { label: 'Feature Films', value: 'Feature Films' },
+      { label: 'Short Films', value: 'Short Films' },
+    ],
+  },
+  {
+    label: 'Styling',
+    value: 'Styling',
+    children: [
+      { label: 'Commercials', value: 'Commercials' },
+      { label: 'Music Videos', value: 'Music Videos' },
+      { label: 'Editorial', value: 'Editorial' },
+    ],
+  },
 ];
 
 export default function Nav({ filters, light = false }: NavProps) {
@@ -27,9 +48,14 @@ export default function Nav({ filters, light = false }: NavProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  // tracks which sub-menu is open by filter value, e.g. 'Film'
+  const [openSub, setOpenSub] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const workFilters = filters?.length ? filters : DEFAULT_FILTERS;
+  const workFilters: Filter[] = (filters?.length ? filters : DEFAULT_FILTERS).map((f) => ({
+    ...f,
+    children: f.children ?? [],
+  }));
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -48,6 +74,7 @@ export default function Nav({ filters, light = false }: NavProps) {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setWorkOpen(false);
+        setOpenSub(null);
       }
     };
     document.addEventListener('mousedown', handler);
@@ -57,6 +84,7 @@ export default function Nav({ filters, light = false }: NavProps) {
   useEffect(() => {
     setMobileOpen(false);
     setWorkOpen(false);
+    setOpenSub(null);
   }, [pathname]);
 
   const textColor = '#0a0a0a';
@@ -80,6 +108,117 @@ export default function Nav({ filters, light = false }: NavProps) {
 
   const isWork = pathname === '/work';
 
+  // ── Desktop dropdown item (inline accordion) ──────────────────────────────
+  const DesktopFilterItem = ({ f }: { f: Filter }) => {
+    const hasChildren = f.children && f.children.length > 0;
+    const isSubOpen = openSub === f.value;
+
+    return (
+      <div>
+        {/* Parent row */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '6px',
+            padding: '9px 14px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            transition: 'background 0.15s',
+          }}
+          onClick={() => hasChildren && setOpenSub(isSubOpen ? null : f.value)}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+        >
+          {hasChildren ? (
+            <span
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '12px',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase' as const,
+                color: '#0a0a0a',
+                opacity: 0.75,
+              }}
+            >
+              {f.label}
+            </span>
+          ) : (
+            <Link
+              href={`/work?filter=${encodeURIComponent(f.value)}`}
+              onClick={() => { setWorkOpen(false); setOpenSub(null); }}
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '12px',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase' as const,
+                color: '#0a0a0a',
+                textDecoration: 'none',
+                opacity: 0.75,
+                flex: 1,
+              }}
+            >
+              {f.label}
+            </Link>
+          )}
+          {hasChildren && (
+            <svg
+              width="10" height="10" viewBox="0 0 10 10" fill="none"
+              style={{ transform: isSubOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s', flexShrink: 0, opacity: 0.4 }}
+            >
+              <path d="M2 3.5l3 3 3-3" stroke="#0a0a0a" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </div>
+
+        {/* Inline accordion — expands downward inside the panel */}
+        <AnimatePresence>
+          {hasChildren && isSubOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              style={{ overflow: 'hidden' }}
+            >
+              {f.children!.map((child) => (
+                <Link
+                  key={child.value}
+                  href={`/work?filter=${encodeURIComponent(child.value)}`}
+                  onClick={() => { setWorkOpen(false); setOpenSub(null); }}
+                  style={{
+                    display: 'block',
+                    padding: '8px 14px 8px 24px',
+                    borderRadius: '8px',
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: '11px',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase' as const,
+                    color: '#0a0a0a',
+                    textDecoration: 'none',
+                    opacity: 0.5,
+                    transition: 'background 0.15s, opacity 0.15s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)';
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.opacity = '0.5';
+                  }}
+                >
+                  {child.label}
+                </Link>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
   return (
     <>
       <motion.nav
@@ -98,56 +237,50 @@ export default function Nav({ filters, light = false }: NavProps) {
           alignItems: 'center',
           justifyContent: 'space-between',
           backgroundColor: scrolled ? 'rgba(255,255,255,0.94)' : 'transparent',
-borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
+          borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
           backdropFilter: scrolled ? 'blur(14px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
           transition: 'background-color 0.3s, border-color 0.3s',
         }}
       >
         {/* Wordmark */}
-<Link
-  href="/"
-  style={{
-    fontFamily: "'Instrument Serif', serif",
-    fontSize: isMobile ? '17px' : '19px',
-    color: textColor,
-    textDecoration: 'none',
-    letterSpacing: '-0.015em',
-    opacity: pathname === '/' ? 0 : 0.85,
-    pointerEvents: pathname === '/' ? 'none' : 'auto',
-    transition: 'opacity 0.2s',
-  }}
->
-  Sara Lukaszewski
-</Link>
+        <Link
+          href="/"
+          style={{
+            fontFamily: "'Instrument Serif', serif",
+            fontSize: isMobile ? '17px' : '19px',
+            color: textColor,
+            textDecoration: 'none',
+            letterSpacing: '-0.015em',
+            opacity: pathname === '/' ? 0 : 0.85,
+            pointerEvents: pathname === '/' ? 'none' : 'auto',
+            transition: 'opacity 0.2s',
+          }}
+        >
+          Sara Lukaszewski
+        </Link>
 
-        {/* Desktop links */}
+        {/* ── Desktop links ── */}
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '36px' }}>
 
-            {/* Work + dropdown — no All option */}
+            {/* Work dropdown */}
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <button
-                onClick={() => setWorkOpen(o => !o)}
+                onClick={() => { setWorkOpen((o) => !o); setOpenSub(null); }}
                 style={{
                   ...linkStyle(isWork),
                   display: 'flex',
                   alignItems: 'center',
                   gap: '5px',
                 }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-                onMouseLeave={e => { if (!isWork) e.currentTarget.style.opacity = String(textOpacity); }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+                onMouseLeave={(e) => { if (!isWork) e.currentTarget.style.opacity = String(textOpacity); }}
               >
                 Work
                 <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 10 10"
-                  fill="none"
-                  style={{
-                    transform: workOpen ? 'rotate(180deg)' : 'rotate(0)',
-                    transition: 'transform 0.2s',
-                  }}
+                  width="10" height="10" viewBox="0 0 10 10" fill="none"
+                  style={{ transform: workOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}
                 >
                   <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -170,40 +303,13 @@ borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
                       border: '1px solid rgba(0,0,0,0.08)',
                       boxShadow: '0 8px 32px rgba(0,0,0,0.10)',
                       padding: '6px',
-                      minWidth: '180px',
+                      minWidth: '200px',
                       zIndex: 200,
+                      overflow: 'visible',
                     }}
                   >
-                    {/* Disciplines only — no All */}
-                    {workFilters.map(({ label, value }) => (
-                      <Link
-                        key={value}
-                        href={`/work?filter=${encodeURIComponent(value)}`}
-                        onClick={() => setWorkOpen(false)}
-                        style={{
-                          display: 'block',
-                          padding: '9px 14px',
-                          borderRadius: '8px',
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: '12px',
-                          letterSpacing: '0.08em',
-                          textTransform: 'uppercase',
-                          color: '#0a0a0a',
-                          textDecoration: 'none',
-                          opacity: 0.75,
-                          transition: 'background 0.15s, opacity 0.15s',
-                        }}
-                        onMouseEnter={e => {
-                          e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)';
-                          e.currentTarget.style.opacity = '1';
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.opacity = '0.75';
-                        }}
-                      >
-                        {label}
-                      </Link>
+                    {workFilters.map((f) => (
+                      <DesktopFilterItem key={f.value} f={f} />
                     ))}
                   </motion.div>
                 )}
@@ -213,8 +319,8 @@ borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
             <Link
               href="/about"
               style={linkStyle(pathname === '/about')}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-              onMouseLeave={e => { if (pathname !== '/about') e.currentTarget.style.opacity = String(textOpacity); }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={(e) => { if (pathname !== '/about') e.currentTarget.style.opacity = String(textOpacity); }}
             >
               About
             </Link>
@@ -222,46 +328,29 @@ borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
             <Link
               href="/contact"
               style={linkStyle(pathname === '/contact')}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-              onMouseLeave={e => { if (pathname !== '/contact') e.currentTarget.style.opacity = String(textOpacity); }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={(e) => { if (pathname !== '/contact') e.currentTarget.style.opacity = String(textOpacity); }}
             >
               Contact
             </Link>
           </div>
         )}
 
-        {/* Mobile hamburger */}
+        {/* ── Mobile hamburger ── */}
         {isMobile && (
           <button
-            onClick={() => setMobileOpen(o => !o)}
-            style={{
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '5px',
-            }}
+            onClick={() => setMobileOpen((o) => !o)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', flexDirection: 'column', gap: '5px' }}
             aria-label="Menu"
           >
-            <motion.span
-              animate={mobileOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }}
-              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transformOrigin: 'center' }}
-            />
-            <motion.span
-              animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
-              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor }}
-            />
-            <motion.span
-              animate={mobileOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }}
-              style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transformOrigin: 'center' }}
-            />
+            <motion.span animate={mobileOpen ? { rotate: 45, y: 7 } : { rotate: 0, y: 0 }} style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transformOrigin: 'center' }} />
+            <motion.span animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }} style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor }} />
+            <motion.span animate={mobileOpen ? { rotate: -45, y: -7 } : { rotate: 0, y: 0 }} style={{ display: 'block', width: '22px', height: '1.5px', backgroundColor: textColor, transformOrigin: 'center' }} />
           </button>
         )}
       </motion.nav>
 
-      {/* Mobile menu overlay */}
+      {/* ── Mobile menu overlay ── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -270,73 +359,54 @@ borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 99,
+              position: 'fixed', inset: 0, zIndex: 99,
               backgroundColor: '#ffffff',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
+              display: 'flex', flexDirection: 'column', justifyContent: 'center',
               padding: '0 40px',
+              overflowY: 'auto',
             }}
           >
-            <div
-              style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '56px', cursor: 'pointer' }}
-              onClick={() => setMobileOpen(false)}
-            />
+            <div style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '56px', cursor: 'pointer' }} onClick={() => setMobileOpen(false)} />
 
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <Link
                 href="/"
-                style={{
-                  fontFamily: "'Instrument Serif', serif",
-                  fontSize: '40px',
-                  color: '#0a0a0a',
-                  textDecoration: 'none',
-                  letterSpacing: '-0.02em',
-                  opacity: pathname === '/' ? 1 : 0.35,
-                  lineHeight: 1.2,
-                }}
+                style={{ fontFamily: "'Instrument Serif', serif", fontSize: '40px', color: '#0a0a0a', textDecoration: 'none', letterSpacing: '-0.02em', opacity: pathname === '/' ? 1 : 0.35, lineHeight: 1.2 }}
               >
                 Home
               </Link>
 
-              {/* Disciplines directly — no Work parent link */}
-              {workFilters.map(({ label, value }) => (
-                <Link
-                  key={value}
-                  href={`/work?filter=${encodeURIComponent(value)}`}
-                  style={{
-                    fontFamily: "'Instrument Serif', serif",
-                    fontSize: '40px',
-                    color: '#0a0a0a',
-                    textDecoration: 'none',
-                    letterSpacing: '-0.02em',
-                    opacity: 0.35,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  {label}
-                </Link>
+              {workFilters.map(({ label, value, children }) => (
+                <div key={value}>
+                  {/* Parent — clicking goes to /work?filter=Film etc */}
+                  <Link
+                    href={`/work?filter=${encodeURIComponent(value)}`}
+                    style={{ fontFamily: "'Instrument Serif', serif", fontSize: '40px', color: '#0a0a0a', textDecoration: 'none', letterSpacing: '-0.02em', opacity: 0.35, lineHeight: 1.2, display: 'block' }}
+                  >
+                    {label}
+                  </Link>
+                  {/* Sub-items indented */}
+                  {children && children.length > 0 && (
+                    <div style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px', marginBottom: '6px' }}>
+                      {children.map((child) => (
+                        <Link
+                          key={child.value}
+                          href={`/work?filter=${encodeURIComponent(child.value)}`}
+                          style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0a0a0a', textDecoration: 'none', opacity: 0.3, lineHeight: 1.6 }}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
 
               {[
                 { label: 'About', href: '/about' },
                 { label: 'Contact', href: '/contact' },
               ].map(({ label, href }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  style={{
-                    fontFamily: "'Instrument Serif', serif",
-                    fontSize: '40px',
-                    color: '#0a0a0a',
-                    textDecoration: 'none',
-                    letterSpacing: '-0.02em',
-                    opacity: pathname === href ? 1 : 0.35,
-                    lineHeight: 1.2,
-                  }}
-                >
+                <Link key={href} href={href} style={{ fontFamily: "'Instrument Serif', serif", fontSize: '40px', color: '#0a0a0a', textDecoration: 'none', letterSpacing: '-0.02em', opacity: pathname === href ? 1 : 0.35, lineHeight: 1.2 }}>
                   {label}
                 </Link>
               ))}

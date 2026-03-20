@@ -126,20 +126,27 @@ export default defineType({
         },
       ],
     }),
-defineField({
-  name: 'tags',
-  title: 'Tags',
-  type: 'array',
-  of: [{ type: 'string' }],
-  options: {
-    list: [
-      { title: 'Creative Direction', value: 'Creative Direction' },
-      { title: 'Film', value: 'Film' },
-      { title: 'Styling', value: 'Styling' },
-    ],
-    layout: 'list',
-  },
-}),
+    defineField({
+      name: 'tags',
+      title: 'Tags',
+      type: 'array',
+      of: [{ type: 'string' }],
+      options: {
+        list: [
+          { title: 'Creative Direction', value: 'Creative Direction' },
+          // Film + subcategories
+          { title: 'Film', value: 'Film' },
+          { title: 'Film › Feature Films', value: 'Feature Films' },
+          { title: 'Film › Short Films', value: 'Short Films' },
+          // Styling + subcategories
+          { title: 'Styling', value: 'Styling' },
+          { title: 'Styling › Commercials', value: 'Commercials' },
+          { title: 'Styling › Music Videos', value: 'Music Videos' },
+          { title: 'Styling › Editorial', value: 'Editorial' },
+        ],
+        layout: 'list',
+      },
+    }),
     defineField({
       name: 'year',
       title: 'Year',
