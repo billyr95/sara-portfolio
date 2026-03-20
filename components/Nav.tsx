@@ -97,10 +97,10 @@ export default function Nav({ filters, light = false }: NavProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: scrolled ? 'rgba(255,255,255,0.94)' : '#ffffff',
+          backgroundColor: scrolled ? 'rgba(255,255,255,0.94)' : 'transparent',
+borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
           backdropFilter: scrolled ? 'blur(14px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
           transition: 'background-color 0.3s, border-color 0.3s',
         }}
       >

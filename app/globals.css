@@ -62,26 +62,12 @@ body {
   outline-offset: 2px;
 }
 
-/* Force Unicorn Studio canvas to fill its container */
-[id^="unicorn-"] {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-[id^="unicorn-"] canvas {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
-}
-
 /* Force Unicorn Studio canvas to fill and scale responsively */
-[id^="unicorn-"] {
-  width: 100% !important;
-  height: 100% !important;
-}
-
+[id^="unicorn-"],
+[id^="unicorn-"] > div,
 [id^="unicorn-"] canvas {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover;
+  object-fit: cover !important;
+  display: block !important;
 }

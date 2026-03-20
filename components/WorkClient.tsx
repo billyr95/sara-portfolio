@@ -49,7 +49,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
       <Nav filters={filters} />
 
       {/* ── GRID ──────────────────────────────────────────── */}
-      <section style={{ padding: isMobile ? '80px 16px 60px' : '96px 40px 80px' }}>
+      <section style={{ padding: isMobile ? '72px 16px 60px' : '80px 40px 80px' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeFilter}
