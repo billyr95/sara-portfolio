@@ -93,7 +93,7 @@ export default function Nav({ filters }: NavProps) {
 
   const textColor = '#0a0a0a';
   const textOpacity = 0.5;
-  const bgColor = scrolled ? 'rgba(255,255,255,0.94)' : 'transparent';
+  const bgColor = scrolled ? 'transparent' : 'rgba(255,255,255,0.94)';
 
   const linkStyle = (active: boolean): React.CSSProperties => ({
     fontFamily: "'DM Sans', sans-serif",
@@ -229,9 +229,9 @@ export default function Nav({ filters }: NavProps) {
           alignItems: 'center',
           justifyContent: 'space-between',
           backgroundColor: bgColor,
-          borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
-          backdropFilter: scrolled ? 'blur(14px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
+          borderBottom: scrolled ? '1px solid transparent' : '1px solid rgba(0,0,0,0.07)',
+          backdropFilter: scrolled ? 'none' : 'blur(14px)',
+          WebkitBackdropFilter: scrolled ? 'none' : 'blur(14px)',
           transition: 'background-color 0.3s, border-color 0.3s',
         }}
       >
