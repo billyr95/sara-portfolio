@@ -378,9 +378,15 @@ export default function Nav({ filters, forceLight }: NavProps) {
                 { label: 'About', href: '/about' },
                 { label: 'Contact', href: '/contact' },
               ].map(({ label, href }) => {
+                const hrefPath = href.split('?')[0];
+                const hrefQuery = href.includes('?') ? href.split('?')[1] : null;
                 const isActive = href === '/'
                   ? pathname === '/'
-                  : pathname === href || pathname.startsWith(href.split('?')[0]);
+                  : hrefQuery
+                    // For links with a query string (Creative Direction), match exact path+query
+                    ? pathname === hrefPath && (typeof window !== 'undefined' && window.location.search === `?${hrefQuery}`)
+                    // For plain path links, match if pathname starts with that path
+                    : pathname === hrefPath || pathname.startsWith(hrefPath + '/');
                 return (
                   <Link key={href} href={href} style={{
                     fontFamily: "'Instrument Serif', serif", fontSize: '40px',
