@@ -42,13 +42,18 @@ const DEFAULT_FILTERS: Filter[] = [
   },
 ];
 
+// Disciplines that have their own splash page
+const SPLASH_ROUTES: Record<string, string> = {
+  Film: '/work/film',
+  Styling: '/work/styling',
+};
+
 export default function Nav({ filters, light = false }: NavProps) {
   const pathname = usePathname();
   const [workOpen, setWorkOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  // tracks which sub-menu is open by filter value, e.g. 'Film'
   const [openSub, setOpenSub] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -89,6 +94,7 @@ export default function Nav({ filters, light = false }: NavProps) {
 
   const textColor = '#0a0a0a';
   const textOpacity = 0.5;
+  const bgColor = scrolled ? 'rgba(255,255,255,0.94)' : 'transparent';
 
   const linkStyle = (active: boolean): React.CSSProperties => ({
     fontFamily: "'DM Sans', sans-serif",
@@ -108,14 +114,18 @@ export default function Nav({ filters, light = false }: NavProps) {
 
   const isWork = pathname === '/work';
 
-  // ── Desktop dropdown item (inline accordion) ──────────────────────────────
+  // Get the href for a filter — splash page if available, else /work?filter=
+  const getFilterHref = (value: string) => {
+    return SPLASH_ROUTES[value] ?? `/work?filter=${encodeURIComponent(value)}`;
+  };
+
   const DesktopFilterItem = ({ f }: { f: Filter }) => {
     const hasChildren = f.children && f.children.length > 0;
     const isSubOpen = openSub === f.value;
+    const topLevelHref = getFilterHref(f.value);
 
     return (
       <div>
-        {/* Parent row */}
         <div
           style={{
             display: 'flex',
@@ -131,37 +141,23 @@ export default function Nav({ filters, light = false }: NavProps) {
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)'; }}
           onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
         >
-          {hasChildren ? (
-            <span
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '12px',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase' as const,
-                color: '#0a0a0a',
-                opacity: 0.75,
-              }}
-            >
-              {f.label}
-            </span>
-          ) : (
-            <Link
-              href={`/work?filter=${encodeURIComponent(f.value)}`}
-              onClick={() => { setWorkOpen(false); setOpenSub(null); }}
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '12px',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase' as const,
-                color: '#0a0a0a',
-                textDecoration: 'none',
-                opacity: 0.75,
-                flex: 1,
-              }}
-            >
-              {f.label}
-            </Link>
-          )}
+          {/* Parent label: always clickable to top-level href */}
+          <Link
+            href={topLevelHref}
+            onClick={() => { setWorkOpen(false); setOpenSub(null); }}
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '12px',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase' as const,
+              color: '#0a0a0a',
+              textDecoration: 'none',
+              opacity: 0.75,
+              flex: 1,
+            }}
+          >
+            {f.label}
+          </Link>
           {hasChildren && (
             <svg
               width="10" height="10" viewBox="0 0 10 10" fill="none"
@@ -172,7 +168,6 @@ export default function Nav({ filters, light = false }: NavProps) {
           )}
         </div>
 
-        {/* Inline accordion — expands downward inside the panel */}
         <AnimatePresence>
           {hasChildren && isSubOpen && (
             <motion.div
@@ -236,7 +231,7 @@ export default function Nav({ filters, light = false }: NavProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: scrolled ? 'rgba(255,255,255,0.94)' : 'transparent',
+          backgroundColor: bgColor,
           borderBottom: scrolled ? '1px solid rgba(0,0,0,0.07)' : '1px solid transparent',
           backdropFilter: scrolled ? 'blur(14px)' : 'none',
           WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
@@ -260,11 +255,9 @@ export default function Nav({ filters, light = false }: NavProps) {
           Sara Lukaszewski
         </Link>
 
-        {/* ── Desktop links ── */}
+        {/* Desktop links */}
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '36px' }}>
-
-            {/* Work dropdown */}
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <button
                 onClick={() => { setWorkOpen((o) => !o); setOpenSub(null); }}
@@ -336,7 +329,7 @@ export default function Nav({ filters, light = false }: NavProps) {
           </div>
         )}
 
-        {/* ── Mobile hamburger ── */}
+        {/* Mobile hamburger */}
         {isMobile && (
           <button
             onClick={() => setMobileOpen((o) => !o)}
@@ -350,7 +343,7 @@ export default function Nav({ filters, light = false }: NavProps) {
         )}
       </motion.nav>
 
-      {/* ── Mobile menu overlay ── */}
+      {/* Mobile menu overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -376,31 +369,51 @@ export default function Nav({ filters, light = false }: NavProps) {
                 Home
               </Link>
 
-              {workFilters.map(({ label, value, children }) => (
-                <div key={value}>
-                  {/* Parent — clicking goes to /work?filter=Film etc */}
+              {/* Creative Direction — goes straight to filtered work */}
+              <Link
+                href="/work?filter=Creative+Direction"
+                style={{ fontFamily: "'Instrument Serif', serif", fontSize: '40px', color: '#0a0a0a', textDecoration: 'none', letterSpacing: '-0.02em', opacity: 0.35, lineHeight: 1.2, display: 'block' }}
+              >
+                Creative Direction
+              </Link>
+
+              {/* Film — goes to splash page */}
+              <Link
+                href="/work/film"
+                style={{ fontFamily: "'Instrument Serif', serif", fontSize: '40px', color: '#0a0a0a', textDecoration: 'none', letterSpacing: '-0.02em', opacity: 0.35, lineHeight: 1.2, display: 'block' }}
+              >
+                Film
+              </Link>
+              <div style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px', marginBottom: '6px' }}>
+                {[{ label: 'Feature Films', value: 'Feature Films' }, { label: 'Short Films', value: 'Short Films' }].map((child) => (
                   <Link
-                    href={`/work?filter=${encodeURIComponent(value)}`}
-                    style={{ fontFamily: "'Instrument Serif', serif", fontSize: '40px', color: '#0a0a0a', textDecoration: 'none', letterSpacing: '-0.02em', opacity: 0.35, lineHeight: 1.2, display: 'block' }}
+                    key={child.value}
+                    href={`/work?filter=${encodeURIComponent(child.value)}`}
+                    style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0a0a0a', textDecoration: 'none', opacity: 0.3, lineHeight: 1.6 }}
                   >
-                    {label}
+                    {child.label}
                   </Link>
-                  {/* Sub-items indented */}
-                  {children && children.length > 0 && (
-                    <div style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px', marginBottom: '6px' }}>
-                      {children.map((child) => (
-                        <Link
-                          key={child.value}
-                          href={`/work?filter=${encodeURIComponent(child.value)}`}
-                          style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0a0a0a', textDecoration: 'none', opacity: 0.3, lineHeight: 1.6 }}
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
+
+              {/* Styling — goes to splash page */}
+              <Link
+                href="/work/styling"
+                style={{ fontFamily: "'Instrument Serif', serif", fontSize: '40px', color: '#0a0a0a', textDecoration: 'none', letterSpacing: '-0.02em', opacity: 0.35, lineHeight: 1.2, display: 'block' }}
+              >
+                Styling
+              </Link>
+              <div style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px', marginBottom: '6px' }}>
+                {[{ label: 'Commercials', value: 'Commercials' }, { label: 'Music Videos', value: 'Music Videos' }, { label: 'Editorial', value: 'Editorial' }].map((child) => (
+                  <Link
+                    key={child.value}
+                    href={`/work?filter=${encodeURIComponent(child.value)}`}
+                    style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0a0a0a', textDecoration: 'none', opacity: 0.3, lineHeight: 1.6 }}
+                  >
+                    {child.label}
+                  </Link>
+                ))}
+              </div>
 
               {[
                 { label: 'About', href: '/about' },
