@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import ProjectModal from '@/components/ProjectModal';
 import PortfolioGrid from '@/components/PortfolioGrid';
-import FullWidthGrid from './FullWidthGrid';
+import FullWidthGrid from '@/components/FullWidthGrid';
 import Nav from '@/components/Nav';
 import { Project } from '@/types';
 
@@ -21,11 +21,11 @@ interface Filter {
 }
 
 interface WorkClientProps {
-  projects: Project[];
-  filters: Filter[];
+  projects?: Project[];
+  filters?: Filter[];
 }
 
-// Filters that should display as full-width 16:9 — everything except Creative Direction and Editorial
+// Filters that should display as full-width 16:9
 const FULL_WIDTH_FILTERS = new Set([
   'Film',
   'Feature Films',
@@ -35,8 +35,6 @@ const FULL_WIDTH_FILTERS = new Set([
   'Music Videos',
 ]);
 
-// Map every parent value → its children's values so filtering Film also
-// shows Feature Films + Short Films projects
 function buildParentMap(filters: Filter[]): Record<string, string[]> {
   const map: Record<string, string[]> = {};
   for (const f of filters) {
@@ -51,29 +49,41 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
   const searchParams = useSearchParams();
   const urlFilter = searchParams.get('filter');
 
+  const safeProjects: Project[] = Array.isArray(projects) ? projects : [];
+  const safeFilters: Filter[] = Array.isArray(filters) ? filters : [];
+
   const [activeFilter, setActiveFilter] = useState<string>(urlFilter || 'ALL');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [gridKey, setGridKey] = useState(0);
 
   useEffect(() => {
     setActiveFilter(urlFilter || 'ALL');
   }, [urlFilter]);
 
   useEffect(() => {
-    setIsLoaded(true);
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+
+    const t = setTimeout(() => {
+      setIsLoaded(true);
+      setGridKey((k) => k + 1);
+    }, 120);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      clearTimeout(t);
+    };
   }, []);
 
-  const parentMap = buildParentMap(filters);
+  const parentMap = buildParentMap(safeFilters);
 
-  const filteredProjects =
+  const filteredProjects: Project[] =
     activeFilter === 'ALL'
-      ? projects
-      : projects.filter((p) => {
+      ? safeProjects
+      : safeProjects.filter((p) => {
           if (p.tags?.includes(activeFilter)) return true;
           const childValues = parentMap[activeFilter];
           if (childValues) {
@@ -82,22 +92,14 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
           return false;
         });
 
-  // Determine layout: full-width 16:9 or mosaic
   const useFullWidth = activeFilter !== 'ALL' && FULL_WIDTH_FILTERS.has(activeFilter);
-
-  // Page title for filtered views
-  const getPageTitle = () => {
-    if (activeFilter === 'ALL') return null;
-    return activeFilter;
-  };
-
-  const pageTitle = getPageTitle();
+  const pageTitle = activeFilter !== 'ALL' ? activeFilter : null;
+  const projectCount = filteredProjects.length;
 
   return (
     <main style={{ minHeight: '100vh', backgroundColor: '#ffffff' }}>
-      <Nav filters={filters} />
+      <Nav filters={safeFilters} />
 
-      {/* Category heading for filtered views */}
       {pageTitle && (
         <motion.div
           key={pageTitle}
@@ -133,7 +135,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
                 letterSpacing: '0.05em',
               }}
             >
-              {filteredProjects.length} {filteredProjects.length === 1 ? 'project' : 'projects'}
+              {projectCount} {projectCount === 1 ? 'project' : 'projects'}
             </span>
           </div>
         </motion.div>
@@ -154,7 +156,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {filteredProjects.length > 0 ? (
+            {projectCount > 0 ? (
               useFullWidth ? (
                 <FullWidthGrid
                   projects={filteredProjects}
@@ -162,7 +164,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
                   isLoaded={isLoaded}
                 />
               ) : (
-                <div style={{ padding: pageTitle ? (isMobile ? '0 16px' : '0 40px') : '0' }}>
+                <div key={gridKey} style={{ padding: pageTitle ? (isMobile ? '0 16px' : '0 40px') : '0' }}>
                   <PortfolioGrid
                     projects={filteredProjects}
                     onProjectClick={setSelectedProject}

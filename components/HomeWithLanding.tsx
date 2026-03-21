@@ -41,7 +41,16 @@ export default function HomeWithLanding({ data, filters = [] }: Props) {
       <Nav filters={filters} />
 
       {/* Unicorn Studio Scene — full bleed */}
-      <div style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 0,
+        overflow: 'hidden',
+        padding: isMobile ? '0 24px' : '0',
+        boxSizing: 'border-box',
+      }}>
         <UnicornScene
           projectId="RjBertHx7sTmN2jIu577"
           sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.4/dist/unicornStudio.umd.js"
