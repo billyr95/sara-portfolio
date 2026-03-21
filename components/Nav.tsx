@@ -18,6 +18,7 @@ interface Filter {
 
 interface NavProps {
   filters?: Filter[];
+  forceLight?: boolean; // always use dark text, skip brightness sampling
 }
 
 const DEFAULT_FILTERS: Filter[] = [
@@ -105,7 +106,7 @@ function sampleNavBrightness(navHeight: number): number {
   }
 }
 
-export default function Nav({ filters }: NavProps) {
+export default function Nav({ filters, forceLight }: NavProps) {
   const pathname = usePathname();
   const [workOpen, setWorkOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -171,9 +172,9 @@ export default function Nav({ filters }: NavProps) {
     setOpenSub(null);
   }, [pathname]);
 
-  const textColor = isDark ? '#ffffff' : '#0a0a0a';
+  const textColor = (forceLight || !isDark) ? '#0a0a0a' : '#ffffff';
   const textOpacity = 0.6;
-  const barColor = isDark ? '#ffffff' : '#0a0a0a';
+  const barColor = (forceLight || !isDark) ? '#0a0a0a' : '#ffffff';
 
   const linkStyle = (active: boolean): React.CSSProperties => ({
     fontFamily: "'DM Sans', sans-serif",

@@ -65,6 +65,8 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
+    // Tell Nav to re-sample brightness now that the modal is covering the page
+    window.dispatchEvent(new Event('scroll'));
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);

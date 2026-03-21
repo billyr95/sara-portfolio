@@ -42,7 +42,7 @@ export default function HomeWithLanding({ data, filters = [] }: Props) {
         position: 'relative',
       }}
     >
-      <Nav filters={filters} />
+      <Nav filters={filters} forceLight />
 
       {/* Desktop scene — hidden on mobile via CSS */}
       <div style={{
