@@ -65,7 +65,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
     window.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
-    
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
@@ -80,9 +80,10 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Close button */}
+      {/* Close button — shifted down 35px so it clears the nav on mobile */}
       <motion.button
-        className="fixed top-5 right-5 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-neutral-100 backdrop-blur-sm hover:bg-neutral-200 transition-colors"
+        className="fixed right-5 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-neutral-100 backdrop-blur-sm hover:bg-neutral-200 transition-colors"
+        style={{ top: '35px' }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
@@ -126,7 +127,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       {/* Main content */}
       <div ref={contentRef} className="h-full overflow-y-auto overscroll-contain">
         {/* Hero media */}
-        <motion.div 
+        <motion.div
           className="min-h-screen flex items-center justify-center p-8 md:p-16"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -152,7 +153,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
         {/* Media indicators */}
         {media.length > 1 && (
-          <motion.div 
+          <motion.div
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -162,7 +163,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               <button
                 key={index}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === activeIndex ? 'bg-white w-8' : 'bg-white/30 hover:bg-white/50'
+                  index === activeIndex ? 'bg-black w-8' : 'bg-black/30 hover:bg-black/50'
                 }`}
                 onClick={() => setActiveIndex(index)}
               />
@@ -171,7 +172,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         )}
 
         {/* Project info */}
-        <motion.div 
+        <motion.div
           className="bg-neutral-50 border-t border-neutral-200"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -179,16 +180,16 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         >
           <div className="max-w-4xl mx-auto px-6 py-16 md:py-24">
             <div className="mb-12">
-              <motion.div 
+              <motion.div
                 className="flex items-center gap-3 mb-4"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
                 {tags.map((tag) => (
-                  <span 
+                  <span
                     key={tag}
-                    className="text-xs uppercase tracking-[0.2em] text-neutral-500 border border-white/20 px-3 py-1"
+                    className="text-xs uppercase tracking-[0.2em] text-neutral-500 border border-neutral-200 px-3 py-1"
                   >
                     {tag}
                   </span>
@@ -197,9 +198,9 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   {project.year}
                 </span>
               </motion.div>
-              
-              <motion.h1 
-                className="font-display text-4xl md:text-6xl lg:text-7xl tracking-tight"
+
+              <motion.h1
+                className="font-display text-4xl md:text-6xl lg:text-7xl tracking-tight text-neutral-900"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -208,7 +209,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               </motion.h1>
             </div>
 
-            <motion.div 
+            <motion.div
               className="grid md:grid-cols-2 gap-12 mb-16"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -252,8 +253,8 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     <button
                       key={index}
                       className={`relative aspect-square overflow-hidden transition-all duration-300 ${
-                        index === activeIndex 
-                          ? 'ring-2 ring-white ring-offset-2 ring-offset-neutral-50' 
+                        index === activeIndex
+                          ? 'ring-2 ring-neutral-900 ring-offset-2 ring-offset-neutral-50'
                           : 'opacity-50 hover:opacity-100'
                       }`}
                       onClick={() => {
@@ -279,7 +280,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                       {item.type === 'video' && (
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center">
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="white">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="black">
                               <polygon points="2,0 12,6 2,12" />
                             </svg>
                           </div>

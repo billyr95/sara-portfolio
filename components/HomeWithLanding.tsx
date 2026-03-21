@@ -17,6 +17,10 @@ const disciplines = [
   { label: 'Styling', value: 'Styling', href: '/work/styling' },
 ];
 
+const DESKTOP_PROJECT_ID = 'RjBertHx7sTmN2jIu577';
+const MOBILE_PROJECT_ID  = '7DGpovGYmyRh48tmZ74w';
+const SDK_URL = 'https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.4/dist/unicornStudio.umd.js';
+
 export default function HomeWithLanding({ data, filters = [] }: Props) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -40,7 +44,7 @@ export default function HomeWithLanding({ data, filters = [] }: Props) {
     >
       <Nav filters={filters} />
 
-      {/* Unicorn Studio Scene — full bleed */}
+      {/* Unicorn Studio Scene — full bleed, no padding on mobile */}
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -48,15 +52,24 @@ export default function HomeWithLanding({ data, filters = [] }: Props) {
         height: '100%',
         zIndex: 0,
         overflow: 'hidden',
-        padding: isMobile ? '0 24px' : '0',
-        boxSizing: 'border-box',
       }}>
-        <UnicornScene
-          projectId="RjBertHx7sTmN2jIu577"
-          sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.1.4/dist/unicornStudio.umd.js"
-          width="100%"
-          height="100%"
-        />
+        {isMobile ? (
+          <UnicornScene
+            key="mobile"
+            projectId={MOBILE_PROJECT_ID}
+            sdkUrl={SDK_URL}
+            width="100%"
+            height="100%"
+          />
+        ) : (
+          <UnicornScene
+            key="desktop"
+            projectId={DESKTOP_PROJECT_ID}
+            sdkUrl={SDK_URL}
+            width="100%"
+            height="100%"
+          />
+        )}
       </div>
 
       {/* Discipline links — overlaid on the scene */}
