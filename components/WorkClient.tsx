@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import ProjectModal from '@/components/ProjectModal';
 import PortfolioGrid from '@/components/PortfolioGrid';
 import FullWidthGrid from '@/components/FullWidthGrid';
+import GridThreeColumn from '@/components/GridThreeColumn';
 import Nav from '@/components/Nav';
 import { Project } from '@/types';
 
@@ -25,11 +26,15 @@ interface WorkClientProps {
   filters: Filter[];
 }
 
-// Filters that should display as full-width 16:9
+// Full-width stack on all screens
 const FULL_WIDTH_FILTERS = new Set([
   'Film',
   'Feature Films',
   'Short Films',
+]);
+
+// Full-width on mobile, 3-col grid on desktop
+const THREE_COL_FILTERS = new Set([
   'Styling',
   'Commercials',
   'Music Videos',
@@ -93,8 +98,51 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
         });
 
   const useFullWidth = activeFilter !== 'ALL' && FULL_WIDTH_FILTERS.has(activeFilter);
+  const useThreeCol  = activeFilter !== 'ALL' && THREE_COL_FILTERS.has(activeFilter);
   const pageTitle = activeFilter !== 'ALL' ? activeFilter : null;
   const projectCount = filteredProjects.length;
+
+  const renderGrid = () => {
+    if (useFullWidth) {
+      return (
+        <FullWidthGrid
+          projects={filteredProjects}
+          onProjectClick={setSelectedProject}
+          isLoaded={isLoaded}
+        />
+      );
+    }
+
+    if (useThreeCol) {
+      // 3-col grid on desktop, full-width stack on mobile
+      return isMobile ? (
+        <FullWidthGrid
+          projects={filteredProjects}
+          onProjectClick={setSelectedProject}
+          isLoaded={isLoaded}
+        />
+      ) : (
+        <div style={{ padding: '0 40px' }}>
+          <GridThreeColumn
+            projects={filteredProjects}
+            onProjectClick={setSelectedProject}
+            isLoaded={isLoaded}
+          />
+        </div>
+      );
+    }
+
+    // Mosaic
+    return (
+      <div key={gridKey} style={{ padding: pageTitle ? (isMobile ? '0 16px' : '0 40px') : '0' }}>
+        <PortfolioGrid
+          projects={filteredProjects}
+          onProjectClick={setSelectedProject}
+          isLoaded={isLoaded}
+        />
+      </div>
+    );
+  };
 
   return (
     <main style={{ minHeight: '100vh', backgroundColor: '#ffffff' }}>
@@ -156,23 +204,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {projectCount > 0 ? (
-              useFullWidth ? (
-                <FullWidthGrid
-                  projects={filteredProjects}
-                  onProjectClick={setSelectedProject}
-                  isLoaded={isLoaded}
-                />
-              ) : (
-                <div key={gridKey} style={{ padding: pageTitle ? (isMobile ? '0 16px' : '0 40px') : '0' }}>
-                  <PortfolioGrid
-                    projects={filteredProjects}
-                    onProjectClick={setSelectedProject}
-                    isLoaded={isLoaded}
-                  />
-                </div>
-              )
-            ) : (
+            {projectCount > 0 ? renderGrid() : (
               <div
                 style={{
                   textAlign: 'center',
