@@ -22,7 +22,7 @@ interface Filter {
 
 interface WorkClientProps {
   projects?: Project[];
-  filters?: Filter[];
+  filters: Filter[];
 }
 
 // Filters that should display as full-width 16:9
