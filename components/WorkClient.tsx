@@ -133,7 +133,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
 
     // Mosaic
     return (
-      <div key={gridKey} style={{ padding: isMobile ? '0 16px' : '0 40px' }}>
+      <div key={gridKey}>
         <PortfolioGrid
           projects={filteredProjects}
           onProjectClick={setSelectedProject}
