@@ -99,7 +99,6 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
 
   const useFullWidth = activeFilter !== 'ALL' && FULL_WIDTH_FILTERS.has(activeFilter);
   const useThreeCol  = activeFilter !== 'ALL' && THREE_COL_FILTERS.has(activeFilter);
-  const pageTitle = activeFilter !== 'ALL' ? activeFilter : null;
   const projectCount = filteredProjects.length;
 
   const renderGrid = () => {
@@ -134,7 +133,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
 
     // Mosaic
     return (
-      <div key={gridKey} style={{ padding: pageTitle ? (isMobile ? '0 16px' : '0 40px') : '0' }}>
+      <div key={gridKey} style={{ padding: isMobile ? '0 16px' : '0 40px' }}>
         <PortfolioGrid
           projects={filteredProjects}
           onProjectClick={setSelectedProject}
@@ -148,54 +147,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
     <main style={{ minHeight: '100vh', backgroundColor: '#ffffff' }}>
       <Nav filters={safeFilters} />
 
-      {pageTitle && (
-        <motion.div
-          key={pageTitle}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            paddingTop: isMobile ? '80px' : '90px',
-            paddingLeft: isMobile ? '16px' : '40px',
-            paddingRight: isMobile ? '16px' : '40px',
-            paddingBottom: '0',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px', marginBottom: '4px' }}>
-            <h1
-              style={{
-                fontFamily: "'Instrument Serif', serif",
-                fontSize: isMobile ? '32px' : 'clamp(32px, 4vw, 52px)',
-                fontWeight: 400,
-                color: '#0a0a0a',
-                margin: 0,
-                letterSpacing: '-0.02em',
-                lineHeight: 1.05,
-              }}
-            >
-              {pageTitle}
-            </h1>
-            <span
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '12px',
-                color: 'rgba(0,0,0,0.35)',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {projectCount} {projectCount === 1 ? 'project' : 'projects'}
-            </span>
-          </div>
-        </motion.div>
-      )}
-
-      <section
-        style={{
-          padding: pageTitle
-            ? isMobile ? '24px 0 60px' : '32px 0 80px'
-            : isMobile ? '72px 16px 60px' : '80px 40px 80px',
-        }}
-      >
+      <section style={{ padding: '0 0 80px' }}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeFilter}
