@@ -386,17 +386,6 @@ export default function Nav({ filters }: NavProps) {
               >
                 Film
               </Link>
-              <div style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px', marginBottom: '6px' }}>
-                {[{ label: 'Feature Films', value: 'Feature Films' }, { label: 'Short Films', value: 'Short Films' }].map((child) => (
-                  <Link
-                    key={child.value}
-                    href={`/work?filter=${encodeURIComponent(child.value)}`}
-                    style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0a0a0a', textDecoration: 'none', opacity: 0.3, lineHeight: 1.6 }}
-                  >
-                    {child.label}
-                  </Link>
-                ))}
-              </div>
 
               <Link
                 href="/work/styling"
@@ -404,17 +393,6 @@ export default function Nav({ filters }: NavProps) {
               >
                 Styling
               </Link>
-              <div style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '2px', marginBottom: '6px' }}>
-                {[{ label: 'Commercials', value: 'Commercials' }, { label: 'Music Videos', value: 'Music Videos' }, { label: 'Editorial', value: 'Editorial' }].map((child) => (
-                  <Link
-                    key={child.value}
-                    href={`/work?filter=${encodeURIComponent(child.value)}`}
-                    style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '16px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0a0a0a', textDecoration: 'none', opacity: 0.3, lineHeight: 1.6 }}
-                  >
-                    {child.label}
-                  </Link>
-                ))}
-              </div>
 
               {[
                 { label: 'About', href: '/about' },

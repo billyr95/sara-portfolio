@@ -83,7 +83,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       {/* Close button — shifted down 35px so it clears the nav on mobile */}
       <motion.button
         className="fixed right-5 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-neutral-100 backdrop-blur-sm hover:bg-neutral-200 transition-colors"
-        style={{ top: '35px' }}
+        style={{ top: '80px' }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
