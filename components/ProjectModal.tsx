@@ -46,6 +46,12 @@ function MediaViewer({ item, isActive }: { item: MediaItem; isActive: boolean })
   );
 }
 
+// Close button top position — same on mobile and desktop
+const CLOSE_BTN_TOP = 80; // px — was 20px, moved down 60px
+const CLOSE_BTN_SIZE = 44; // px
+const CLOSE_BTN_RIGHT = 20; // px
+const TITLE_TOP_PAD = CLOSE_BTN_TOP + CLOSE_BTN_SIZE + 20; // 144px
+
 export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -55,17 +61,12 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') {
-        setActiveIndex((prev) => (prev + 1) % media.length);
-      }
-      if (e.key === 'ArrowLeft') {
-        setActiveIndex((prev) => (prev - 1 + media.length) % media.length);
-      }
+      if (e.key === 'ArrowRight') setActiveIndex((prev) => (prev + 1) % media.length);
+      if (e.key === 'ArrowLeft') setActiveIndex((prev) => (prev - 1 + media.length) % media.length);
     };
 
     window.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
-    // Tell Nav to re-sample brightness now that the modal is covering the page
     window.dispatchEvent(new Event('scroll'));
 
     return () => {
@@ -76,70 +77,209 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 bg-white"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        backgroundColor: '#ffffff',
+      }}
     >
-      {/* Close button — shifted down 35px so it clears the nav on mobile */}
+      {/* ── Close button ── */}
       <motion.button
-        className="fixed right-5 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-neutral-100 backdrop-blur-sm hover:bg-neutral-200 transition-colors"
-        style={{ top: '80px' }}
+        onClick={onClose}
+        aria-label="Close"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
         transition={{ delay: 0.2 }}
-        onClick={onClose}
+        style={{
+          position: 'absolute',
+          top: `${CLOSE_BTN_TOP}px`,
+          right: `${CLOSE_BTN_RIGHT}px`,
+          zIndex: 10,
+          width: `${CLOSE_BTN_SIZE}px`,
+          height: `${CLOSE_BTN_SIZE}px`,
+          borderRadius: '50%',
+          backgroundColor: 'rgba(0,0,0,0.07)',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+          transition: 'background-color 0.2s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.13)')}
+        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.07)')}
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#0a0a0a" strokeWidth="1.8" strokeLinecap="round">
+          <line x1="1" y1="1" x2="15" y2="15" />
+          <line x1="15" y1="1" x2="1" y2="15" />
         </svg>
       </motion.button>
 
-      {/* Navigation arrows */}
+      {/* ── Prev / Next arrows ── */}
       {media.length > 1 && (
         <>
           <motion.button
-            className="fixed left-5 top-1/2 -translate-y-1/2 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-neutral-100 backdrop-blur-sm hover:bg-neutral-200 transition-colors"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
             onClick={() => setActiveIndex((prev) => (prev - 1 + media.length) % media.length)}
+            aria-label="Previous"
+            style={{
+              position: 'absolute',
+              left: '20px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 10,
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(0,0,0,0.07)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2">
               <polyline points="15,18 9,12 15,6" />
             </svg>
           </motion.button>
+
           <motion.button
-            className="fixed right-5 top-1/2 -translate-y-1/2 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-neutral-100 backdrop-blur-sm hover:bg-neutral-200 transition-colors"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
             onClick={() => setActiveIndex((prev) => (prev + 1) % media.length)}
+            aria-label="Next"
+            style={{
+              position: 'absolute',
+              right: '20px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              zIndex: 10,
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(0,0,0,0.07)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2">
               <polyline points="9,18 15,12 9,6" />
             </svg>
           </motion.button>
         </>
       )}
 
-      {/* Main content */}
-      <div ref={contentRef} className="h-full overflow-y-auto overscroll-contain">
+      {/* ── Scrollable body ── */}
+      <div
+        ref={contentRef}
+        style={{ height: '100%', overflowY: 'auto', overscrollBehavior: 'contain' }}
+      >
+        {/* Title block — top padding clears the close button */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.18 }}
+          style={{
+            paddingTop: `${TITLE_TOP_PAD}px`,
+            paddingBottom: '16px',
+            paddingLeft: '24px',
+            // right padding keeps text away from the close button on all viewports
+            paddingRight: `${CLOSE_BTN_RIGHT + CLOSE_BTN_SIZE + 16}px`,
+          }}
+        >
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '8px 16px' }}>
+            <h1
+              style={{
+                fontFamily: "'Instrument Serif', serif",
+                fontSize: 'clamp(26px, 5vw, 58px)',
+                fontWeight: 400,
+                color: '#0a0a0a',
+                lineHeight: 1.05,
+                letterSpacing: '-0.02em',
+                margin: 0,
+              }}
+            >
+              {project.title}
+            </h1>
+            <span
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '11px',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#0a0a0a',
+                opacity: 0.38,
+                flexShrink: 0,
+              }}
+            >
+              {project.year}
+            </span>
+          </div>
+
+          {tags.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: '10px',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    color: '#0a0a0a',
+                    opacity: 0.45,
+                    border: '1px solid rgba(0,0,0,0.18)',
+                    padding: '3px 10px',
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </motion.div>
+
         {/* Hero media */}
         <motion.div
-          className="min-h-screen flex items-center justify-center p-8 md:p-16"
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '0 24px 32px',
+          }}
         >
-          <div className="relative max-w-6xl w-full aspect-video flex items-center justify-center">
+          <div
+            style={{
+              position: 'relative',
+              maxWidth: '1152px',
+              width: '100%',
+              aspectRatio: '16/9',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeIndex}
-                className="w-full h-full flex items-center justify-center"
+                style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
@@ -153,21 +293,29 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
         </motion.div>
 
-        {/* Media indicators */}
+        {/* Dot indicators */}
         {media.length > 1 && (
           <motion.div
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
+            style={{ display: 'flex', justifyContent: 'center', gap: '8px', paddingBottom: '24px' }}
           >
             {media.map((_, index) => (
               <button
                 key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === activeIndex ? 'bg-black w-8' : 'bg-black/30 hover:bg-black/50'
-                }`}
                 onClick={() => setActiveIndex(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                style={{
+                  width: index === activeIndex ? '32px' : '8px',
+                  height: '8px',
+                  borderRadius: '4px',
+                  backgroundColor: index === activeIndex ? '#0a0a0a' : 'rgba(0,0,0,0.25)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  padding: 0,
+                }}
               />
             ))}
           </motion.div>
@@ -175,116 +323,84 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
 
         {/* Project info */}
         <motion.div
-          className="bg-neutral-50 border-t border-neutral-200"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
+          style={{ backgroundColor: '#f9f9f9', borderTop: '1px solid rgba(0,0,0,0.08)' }}
         >
-          <div className="max-w-4xl mx-auto px-6 py-16 md:py-24">
-            <div className="mb-12">
-              <motion.div
-                className="flex items-center gap-3 mb-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                {tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs uppercase tracking-[0.2em] text-neutral-500 border border-neutral-200 px-3 py-1"
-                  >
-                    {tag}
-                  </span>
-                ))}
-                <span className="text-xs uppercase tracking-[0.2em] text-neutral-400 ml-auto">
-                  {project.year}
-                </span>
-              </motion.div>
-
-              <motion.h1
-                className="font-display text-4xl md:text-6xl lg:text-7xl tracking-tight text-neutral-900"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                {project.title}
-              </motion.h1>
-            </div>
-
+          <div style={{ maxWidth: '896px', margin: '0 auto', padding: '64px 24px' }}>
             <motion.div
-              className="grid md:grid-cols-2 gap-12 mb-16"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.5 }}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gap: '48px',
+                marginBottom: '64px',
+              }}
             >
               <div>
-                <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-4">About</h3>
-                <p className="text-lg text-neutral-700 leading-relaxed">
-                  {project.description}
-                </p>
+                <h3 style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#999', marginBottom: '16px' }}>About</h3>
+                <p style={{ fontSize: '17px', color: '#444', lineHeight: 1.75, margin: 0 }}>{project.description}</p>
               </div>
               <div>
-                <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-4">Details</h3>
-                <dl className="space-y-3 text-neutral-500">
-                  <div className="flex justify-between">
-                    <dt>Format</dt>
-                    <dd className="text-neutral-900">{project.aspectRatio}</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt>Media</dt>
-                    <dd className="text-neutral-900">{media.length} items</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt>Category</dt>
-                    <dd className="text-neutral-900">{tags[0] ?? '—'}</dd>
-                  </div>
+                <h3 style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#999', marginBottom: '16px' }}>Details</h3>
+                <dl style={{ display: 'flex', flexDirection: 'column', gap: '12px', color: '#888', margin: 0 }}>
+                  {[
+                    { label: 'Format', value: project.aspectRatio },
+                    { label: 'Media', value: `${media.length} items` },
+                    { label: 'Category', value: tags[0] ?? '—' },
+                  ].map(({ label, value }) => (
+                    <div key={label} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <dt>{label}</dt>
+                      <dd style={{ color: '#0a0a0a', margin: 0 }}>{value}</dd>
+                    </div>
+                  ))}
                 </dl>
               </div>
             </motion.div>
 
-            {/* Gallery thumbnails */}
             {media.length > 1 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
               >
-                <h3 className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-6">Gallery</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <h3 style={{ fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#999', marginBottom: '24px' }}>Gallery</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                   {media.map((item, index) => (
                     <button
                       key={index}
-                      className={`relative aspect-square overflow-hidden transition-all duration-300 ${
-                        index === activeIndex
-                          ? 'ring-2 ring-neutral-900 ring-offset-2 ring-offset-neutral-50'
-                          : 'opacity-50 hover:opacity-100'
-                      }`}
                       onClick={() => {
                         setActiveIndex(index);
                         contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
                       }}
+                      aria-label={`View item ${index + 1}`}
+                      style={{
+                        position: 'relative',
+                        aspectRatio: '1',
+                        overflow: 'hidden',
+                        border: 'none',
+                        cursor: 'pointer',
+                        padding: 0,
+                        outline: index === activeIndex ? '2px solid #0a0a0a' : 'none',
+                        outlineOffset: '2px',
+                        opacity: index === activeIndex ? 1 : 0.5,
+                        transition: 'opacity 0.2s',
+                      }}
+                      onMouseEnter={e => { if (index !== activeIndex) e.currentTarget.style.opacity = '1'; }}
+                      onMouseLeave={e => { if (index !== activeIndex) e.currentTarget.style.opacity = '0.5'; }}
                     >
                       {item.type === 'video' ? (
-                        <video
-                          src={item.src}
-                          poster={item.poster}
-                          className="w-full h-full object-cover"
-                          muted
-                        />
+                        <video src={item.src} poster={item.poster} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted />
                       ) : (
-                        <img
-                          src={item.src}
-                          alt=""
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
+                        <img src={item.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
                       )}
                       {item.type === 'video' && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-8 h-8 rounded-full bg-white/50 flex items-center justify-center">
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="black">
-                              <polygon points="2,0 12,6 2,12" />
-                            </svg>
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="black"><polygon points="2,0 12,6 2,12" /></svg>
                           </div>
                         </div>
                       )}

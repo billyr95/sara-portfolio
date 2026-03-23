@@ -39,6 +39,8 @@ export default defineType({
       initialValue: '16:9',
       validation: (Rule) => Rule.required(),
     }),
+
+    // ── THUMBNAIL — native Sanity uploads only ───────────────────────────
     defineField({
       name: 'thumbnailType',
       title: 'Thumbnail Type',
@@ -73,16 +75,19 @@ export default defineType({
       options: { hotspot: true },
       hidden: ({ parent }) => parent?.thumbnailType !== 'video',
     }),
+
+    // ── MODAL MEDIA GALLERY — native uploads + Cloudinary ───────────────
     defineField({
       name: 'media',
       title: 'Media Gallery',
-      description: 'Images and videos shown when project is opened',
+      description: 'Shown inside the project modal. Use native uploads or pick from Cloudinary.',
       type: 'array',
       of: [
+        // Native image upload
         {
           type: 'object',
           name: 'mediaImage',
-          title: 'Image',
+          title: 'Image (upload)',
           fields: [
             defineField({
               name: 'image',
@@ -95,14 +100,16 @@ export default defineType({
           preview: {
             select: { media: 'image' },
             prepare({ media }) {
-              return { title: 'Image', media };
+              return { title: 'Image (upload)', media };
             },
           },
         },
+
+        // Native video upload
         {
           type: 'object',
           name: 'mediaVideo',
-          title: 'Video',
+          title: 'Video (upload)',
           fields: [
             defineField({
               name: 'video',
@@ -120,12 +127,41 @@ export default defineType({
           ],
           preview: {
             prepare() {
-              return { title: 'Video' };
+              return { title: 'Video (upload)' };
+            },
+          },
+        },
+
+        // Cloudinary asset (images + videos via the plugin picker)
+        {
+          type: 'object',
+          name: 'mediaCloudinary',
+          title: 'Cloudinary Asset',
+          fields: [
+            defineField({
+              name: 'asset',
+              title: 'Cloudinary Asset',
+              // 'cloudinary.asset' is the type registered by sanity-plugin-cloudinary
+              type: 'cloudinary.asset',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: {
+              asset: 'asset',
+            },
+            prepare({ asset }) {
+              const isVideo = asset?.resource_type === 'video';
+              return {
+                title: isVideo ? 'Video (Cloudinary)' : 'Image (Cloudinary)',
+                subtitle: asset?.public_id ?? '',
+              };
             },
           },
         },
       ],
     }),
+
     defineField({
       name: 'tags',
       title: 'Tags',
@@ -134,11 +170,9 @@ export default defineType({
       options: {
         list: [
           { title: 'Creative Direction', value: 'Creative Direction' },
-          // Film + subcategories
           { title: 'Film', value: 'Film' },
           { title: 'Film › Feature Films', value: 'Feature Films' },
           { title: 'Film › Short Films', value: 'Short Films' },
-          // Styling + subcategories
           { title: 'Styling', value: 'Styling' },
           { title: 'Styling › Commercials', value: 'Commercials' },
           { title: 'Styling › Music Videos', value: 'Music Videos' },

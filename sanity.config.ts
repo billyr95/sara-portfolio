@@ -1,6 +1,7 @@
 import { defineConfig } from 'sanity';
 import { deskTool } from 'sanity/desk';
 import { visionTool } from '@sanity/vision';
+import { cloudinarySchemaPlugin } from 'sanity-plugin-cloudinary';
 import { schemaTypes } from './sanity/schemas';
 
 export default defineConfig({
@@ -9,7 +10,11 @@ export default defineConfig({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   basePath: '/studio',
-  plugins: [deskTool(), visionTool()],
+  plugins: [
+    deskTool(),
+    visionTool(),
+    cloudinarySchemaPlugin(),
+  ],
   schema: {
     types: schemaTypes,
   },

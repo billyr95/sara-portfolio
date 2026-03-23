@@ -17,14 +17,32 @@ export const allProjectsQuery = groq`
     },
     "media": media[] {
       _type,
+
+      // Native image upload
       _type == "mediaImage" => {
         "type": "image",
         "src": image.asset->url
       },
+
+      // Native video upload
       _type == "mediaVideo" => {
         "type": "video",
         "src": video.asset->url,
         "poster": poster.asset->url
+      },
+
+      // Cloudinary asset — the plugin stores url, secure_url, resource_type etc.
+      _type == "mediaCloudinary" => {
+        "type": select(
+          asset.resource_type == "video" => "video",
+          "image"
+        ),
+        "src": asset.secure_url,
+        // For videos Cloudinary can auto-generate a poster by swapping the extension
+        "poster": select(
+          asset.resource_type == "video" => asset.secure_url + ".jpg",
+          null
+        )
       }
     },
     tags,
