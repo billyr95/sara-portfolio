@@ -7,44 +7,28 @@ export const allProjectsQuery = groq`
     "slug": slug.current,
     description,
     aspectRatio,
+
+    // Thumbnail — single Cloudinary asset (image or video)
     "thumbnail": {
-      "type": thumbnailType,
-      "src": select(
-        thumbnailType == "video" => thumbnailVideo.asset->url,
-        thumbnailImage.asset->url
-      ),
-      "poster": thumbnailPoster.asset->url
+      "type": select(thumbnail.resource_type == "video" => "video", "image"),
+      "src": thumbnail.secure_url,
+      // For video thumbnails, Cloudinary can serve a poster by appending .jpg
+      "poster": select(
+        thumbnail.resource_type == "video" => thumbnail.secure_url + ".jpg",
+        null
+      )
     },
-    "media": media[] {
-      _type,
 
-      // Native image upload
-      _type == "mediaImage" => {
-        "type": "image",
-        "src": image.asset->url
-      },
+    // Modal gallery — array of Cloudinary assets
+    "media": media[]{
+      "type": select(asset.resource_type == "video" => "video", "image"),
+      "src": asset.secure_url,
+      "poster": select(
+        asset.resource_type == "video" => asset.secure_url + ".jpg",
+        null
+      )
+    }[defined(src)],
 
-      // Native video upload
-      _type == "mediaVideo" => {
-        "type": "video",
-        "src": video.asset->url,
-        "poster": poster.asset->url
-      },
-
-      // Cloudinary asset — the plugin stores url, secure_url, resource_type etc.
-      _type == "mediaCloudinary" => {
-        "type": select(
-          asset.resource_type == "video" => "video",
-          "image"
-        ),
-        "src": asset.secure_url,
-        // For videos Cloudinary can auto-generate a poster by swapping the extension
-        "poster": select(
-          asset.resource_type == "video" => asset.secure_url + ".jpg",
-          null
-        )
-      }
-    },
     tags,
     year
   }

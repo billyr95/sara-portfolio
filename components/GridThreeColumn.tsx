@@ -30,6 +30,8 @@ function GridItem({
     }
   }, []);
 
+  const isVideo = project.thumbnail.type === 'video';
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -48,7 +50,7 @@ function GridItem({
         display: 'block',
       }}
     >
-      {project.thumbnail.type === 'video' ? (
+      {isVideo ? (
         <video
           ref={videoRef}
           src={project.thumbnail.src}
@@ -63,6 +65,7 @@ function GridItem({
           }}
           muted
           loop
+          autoPlay
           playsInline
           preload="metadata"
         />
@@ -139,14 +142,7 @@ function GridItem({
         >
           {project.title}
         </h3>
-        <p
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: '11px',
-            color: 'rgba(255,255,255,0.6)',
-            margin: '3px 0 0',
-          }}
-        >
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.6)', margin: '3px 0 0' }}>
           {project.year}
         </p>
       </div>

@@ -48,17 +48,16 @@ function calculateInfiniteLayout(
   const items: LayoutItem[] = [];
   const numColumns = Math.max(1, Math.floor(containerWidth / baseUnit));
   const cellWidth = containerWidth / numColumns;
-  const cellHeight = cellWidth; // Square cells for easier math
-  
+  const cellHeight = cellWidth;
+
   const targetHeight = scrollY + viewportHeight * 3;
   const targetRows = Math.ceil(targetHeight / cellHeight) + 5;
-  
-  // Create grid filled with false
+
   const grid: boolean[][] = [];
   for (let r = 0; r < targetRows; r++) {
     grid.push(new Array(numColumns).fill(false));
   }
-  
+
   const canPlace = (col: number, row: number, colSpan: number, rowSpan: number): boolean => {
     if (col + colSpan > numColumns || row + rowSpan > grid.length) return false;
     for (let r = row; r < row + rowSpan; r++) {
@@ -68,30 +67,24 @@ function calculateInfiniteLayout(
     }
     return true;
   };
-  
+
   const occupy = (col: number, row: number, colSpan: number, rowSpan: number) => {
     for (let r = row; r < row + rowSpan; r++) {
       for (let c = col; c < col + colSpan; c++) {
-        if (r < grid.length && c < numColumns) {
-          grid[r][c] = true;
-        }
+        if (r < grid.length && c < numColumns) grid[r][c] = true;
       }
     }
   };
 
-  // Find first empty cell
   const findFirstEmpty = (): { col: number; row: number } | null => {
     for (let row = 0; row < grid.length; row++) {
       for (let col = 0; col < numColumns; col++) {
-        if (!grid[row][col]) {
-          return { col, row };
-        }
+        if (!grid[row][col]) return { col, row };
       }
     }
     return null;
   };
 
-  // Get max colSpan that fits at position
   const getMaxColSpan = (col: number, row: number, maxSpan: number): number => {
     let span = 0;
     for (let c = col; c < Math.min(col + maxSpan, numColumns); c++) {
@@ -101,16 +94,12 @@ function calculateInfiniteLayout(
     return span;
   };
 
-  // Get max rowSpan that fits at position with given colSpan
   const getMaxRowSpan = (col: number, row: number, colSpan: number, maxSpan: number): number => {
     let span = 0;
     for (let r = row; r < Math.min(row + maxSpan, grid.length); r++) {
       let rowClear = true;
       for (let c = col; c < col + colSpan; c++) {
-        if (grid[r][c]) {
-          rowClear = false;
-          break;
-        }
+        if (grid[r][c]) { rowClear = false; break; }
       }
       if (!rowClear) break;
       span++;
@@ -125,45 +114,35 @@ function calculateInfiniteLayout(
   while (iterations < maxIterations) {
     const empty = findFirstEmpty();
     if (!empty) break;
-    
+
     const { col, row } = empty;
-    
-    // Pick a project randomly
     const seed = placedCount * 127 + row * 31 + col;
     const projectIndex = Math.floor(seededRandom(seed) * projects.length);
     const project = projects[projectIndex];
     const aspectRatio = getAspectRatioValue(project.aspectRatio);
-    
-    // Determine ideal size based on aspect ratio
+    const sizeVariant = seededRandom(seed * 17);
+
     let idealColSpan: number;
     let idealRowSpan: number;
-    
-    const sizeVariant = seededRandom(seed * 17);
-    
+
     if (aspectRatio > 1.2) {
-      // Landscape - wide
       idealColSpan = sizeVariant > 0.6 ? 3 : 2;
       idealRowSpan = 1;
     } else if (aspectRatio < 0.8) {
-      // Portrait - tall
       idealColSpan = 1;
       idealRowSpan = 2;
     } else {
-      // Square
       const size = sizeVariant > 0.7 ? 2 : 1;
       idealColSpan = size;
       idealRowSpan = size;
     }
-    
-    // Constrain to available space
+
     const maxCol = getMaxColSpan(col, row, idealColSpan);
     const colSpan = Math.max(1, Math.min(idealColSpan, maxCol));
     const maxRow = getMaxRowSpan(col, row, colSpan, idealRowSpan);
     const rowSpan = Math.max(1, Math.min(idealRowSpan, maxRow));
-    
-    // Place it
+
     occupy(col, row, colSpan, rowSpan);
-    
     items.push({
       project,
       x: col * cellWidth,
@@ -173,7 +152,7 @@ function calculateInfiniteLayout(
       index: placedCount,
       key: `${project._id}-${placedCount}`,
     });
-    
+
     placedCount++;
     iterations++;
   }
@@ -181,11 +160,11 @@ function calculateInfiniteLayout(
   return { items, totalHeight: grid.length * cellHeight };
 }
 
-function GridItem({ 
+function GridItem({
   item,
   onClick,
-  isLoaded 
-}: { 
+  isLoaded,
+}: {
   item: LayoutItem;
   onClick: () => void;
   isLoaded: boolean;
@@ -193,6 +172,7 @@ function GridItem({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const { project, x, y, width, height, index } = item;
+  const isVideo = project.thumbnail.type === 'video';
 
   useEffect(() => {
     if (videoRef.current) {
@@ -212,7 +192,7 @@ function GridItem({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="absolute inset-0 bg-neutral-200">
-        {project.thumbnail.type === 'video' ? (
+        {isVideo ? (
           <video
             ref={videoRef}
             src={project.thumbnail.src}
@@ -221,6 +201,7 @@ function GridItem({
             style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
             muted
             loop
+            autoPlay
             playsInline
             preload="metadata"
           />
@@ -235,14 +216,14 @@ function GridItem({
         )}
       </div>
 
-      <motion.div 
+      <motion.div
         className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
         initial={{ opacity: 0 }}
         animate={{ opacity: isHovered ? 1 : 0 }}
         transition={{ duration: 0.3 }}
       />
 
-      <motion.div 
+      <motion.div
         className="absolute inset-0 p-4 flex flex-col justify-end"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
@@ -250,10 +231,7 @@ function GridItem({
       >
         <div className="flex items-center gap-2 mb-2">
           {(project.tags ?? []).slice(0, 2).map((tag) => (
-            <span 
-              key={tag} 
-              className="text-[10px] uppercase tracking-widest text-white/90 bg-black/30 px-2 py-1 rounded-full backdrop-blur-sm"
-            >
+            <span key={tag} className="text-[10px] uppercase tracking-widest text-white/90 bg-black/30 px-2 py-1 rounded-full backdrop-blur-sm">
               {tag}
             </span>
           ))}
@@ -270,25 +248,19 @@ export default function PortfolioGrid({ projects, onProjectClick, isLoaded }: Po
   const [containerWidth, setContainerWidth] = useState(0);
   const [scrollY, setScrollY] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
-  
+
   useEffect(() => {
     const updateDimensions = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
-      }
+      if (containerRef.current) setContainerWidth(containerRef.current.offsetWidth);
       setViewportHeight(window.innerHeight);
     };
-    
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    
+    const handleScroll = () => setScrollY(window.scrollY);
+
     updateDimensions();
     handleScroll();
-    
     window.addEventListener('resize', updateDimensions);
     window.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     return () => {
       window.removeEventListener('resize', updateDimensions);
       window.removeEventListener('scroll', handleScroll);
@@ -302,8 +274,8 @@ export default function PortfolioGrid({ projects, onProjectClick, isLoaded }: Po
 
   const visibleItems = useMemo(() => {
     const buffer = viewportHeight;
-    return items.filter(item => 
-      item.y + item.height > scrollY - buffer && 
+    return items.filter(item =>
+      item.y + item.height > scrollY - buffer &&
       item.y < scrollY + viewportHeight + buffer
     );
   }, [items, scrollY, viewportHeight]);

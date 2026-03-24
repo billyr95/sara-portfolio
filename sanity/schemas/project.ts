@@ -40,99 +40,22 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // ── THUMBNAIL — native Sanity uploads only ───────────────────────────
+    // ── THUMBNAIL — Cloudinary asset (image or video) ────────────────────
     defineField({
-      name: 'thumbnailType',
-      title: 'Thumbnail Type',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Image', value: 'image' },
-          { title: 'Video', value: 'video' },
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'image',
-    }),
-    defineField({
-      name: 'thumbnailImage',
-      title: 'Thumbnail Image',
-      type: 'image',
-      options: { hotspot: true },
-      hidden: ({ parent }) => parent?.thumbnailType !== 'image',
-    }),
-    defineField({
-      name: 'thumbnailVideo',
-      title: 'Thumbnail Video',
-      type: 'file',
-      options: { accept: 'video/*' },
-      hidden: ({ parent }) => parent?.thumbnailType !== 'video',
-    }),
-    defineField({
-      name: 'thumbnailPoster',
-      title: 'Thumbnail Poster (shown while video loads)',
-      type: 'image',
-      options: { hotspot: true },
-      hidden: ({ parent }) => parent?.thumbnailType !== 'video',
+      name: 'thumbnail',
+      title: 'Thumbnail',
+      description: 'Pick an image or video from Cloudinary. Videos autoplay muted on the grid.',
+      type: 'cloudinary.asset',
+      validation: (Rule) => Rule.required(),
     }),
 
-    // ── MODAL MEDIA GALLERY — native uploads + Cloudinary ───────────────
+    // ── MODAL MEDIA GALLERY — Cloudinary assets ──────────────────────────
     defineField({
       name: 'media',
       title: 'Media Gallery',
-      description: 'Shown inside the project modal. Use native uploads or pick from Cloudinary.',
+      description: 'Shown inside the project modal. Pick images or videos from Cloudinary.',
       type: 'array',
       of: [
-        // Native image upload
-        {
-          type: 'object',
-          name: 'mediaImage',
-          title: 'Image (upload)',
-          fields: [
-            defineField({
-              name: 'image',
-              title: 'Image',
-              type: 'image',
-              options: { hotspot: true },
-              validation: (Rule) => Rule.required(),
-            }),
-          ],
-          preview: {
-            select: { media: 'image' },
-            prepare({ media }) {
-              return { title: 'Image (upload)', media };
-            },
-          },
-        },
-
-        // Native video upload
-        {
-          type: 'object',
-          name: 'mediaVideo',
-          title: 'Video (upload)',
-          fields: [
-            defineField({
-              name: 'video',
-              title: 'Video',
-              type: 'file',
-              options: { accept: 'video/*' },
-              validation: (Rule) => Rule.required(),
-            }),
-            defineField({
-              name: 'poster',
-              title: 'Poster Image',
-              type: 'image',
-              options: { hotspot: true },
-            }),
-          ],
-          preview: {
-            prepare() {
-              return { title: 'Video (upload)' };
-            },
-          },
-        },
-
-        // Cloudinary asset (images + videos via the plugin picker)
         {
           type: 'object',
           name: 'mediaCloudinary',
@@ -140,16 +63,13 @@ export default defineType({
           fields: [
             defineField({
               name: 'asset',
-              title: 'Cloudinary Asset',
-              // 'cloudinary.asset' is the type registered by sanity-plugin-cloudinary
+              title: 'Asset',
               type: 'cloudinary.asset',
               validation: (Rule) => Rule.required(),
             }),
           ],
           preview: {
-            select: {
-              asset: 'asset',
-            },
+            select: { asset: 'asset' },
             prepare({ asset }) {
               const isVideo = asset?.resource_type === 'video';
               return {
@@ -199,6 +119,6 @@ export default defineType({
     { title: 'Display Order', name: 'orderAsc', by: [{ field: 'order', direction: 'asc' }] },
   ],
   preview: {
-    select: { title: 'title', subtitle: 'year', media: 'thumbnailImage' },
+    select: { title: 'title', subtitle: 'year' },
   },
 });

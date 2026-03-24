@@ -30,6 +30,8 @@ function FullWidthItem({
     }
   }, []);
 
+  const isVideo = project.thumbnail.type === 'video';
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -48,7 +50,7 @@ function FullWidthItem({
         display: 'block',
       }}
     >
-      {project.thumbnail.type === 'video' ? (
+      {isVideo ? (
         <video
           ref={videoRef}
           src={project.thumbnail.src}
@@ -63,8 +65,10 @@ function FullWidthItem({
           }}
           muted
           loop
+          autoPlay
           playsInline
           preload="metadata"
+          // No controls prop = no controls rendered
         />
       ) : (
         <img
@@ -139,14 +143,7 @@ function FullWidthItem({
         >
           {project.title}
         </h3>
-        <p
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: '12px',
-            color: 'rgba(255,255,255,0.6)',
-            margin: '4px 0 0',
-          }}
-        >
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '4px 0 0' }}>
           {project.year}
         </p>
       </div>
