@@ -7,15 +7,8 @@ export const allProjectsQuery = groq`
     "slug": slug.current,
     description,
     aspectRatio,
+    thumbnailPosition,
 
-    // Hotspot from the native Sanity crop image field
-    // x and y are 0–1 fractions from the top-left corner
-    "thumbnailHotspot": thumbnailCrop.hotspot {
-      x,
-      y
-    },
-
-    // Thumbnail — single Cloudinary asset (image or video)
     "thumbnail": {
       "type": select(thumbnail.resource_type == "video" => "video", "image"),
       "src": thumbnail.secure_url,
@@ -25,7 +18,6 @@ export const allProjectsQuery = groq`
       )
     },
 
-    // Modal gallery — array of Cloudinary assets
     "media": media[]{
       "type": select(asset.resource_type == "video" => "video", "image"),
       "src": asset.secure_url,

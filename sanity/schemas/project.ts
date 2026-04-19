@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity';
+import { CloudinaryCropInput } from '../components/CloudinaryCropInput';
 
 export default defineType({
   name: 'project',
@@ -49,15 +50,15 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // ── THUMBNAIL CROP — native Sanity image for hotspot/crop UI ─────────
+    // ── THUMBNAIL POSITION — click-to-place on the live Cloudinary image ──
     defineField({
-      name: 'thumbnailCrop',
-      title: 'Thumbnail Crop & Position',
-      description:
-        'Upload the same image here to set crop and focal point. Drag to reposition, pinch/scroll to zoom. This controls how the image sits inside the grid box — the Cloudinary asset above is still used for display.',
-      type: 'image',
-      options: {
-        hotspot: true, // enables the drag-to-position + zoom crop UI
+      name: 'thumbnailPosition',
+      title: 'Thumbnail Crop Position',
+      description: 'Click anywhere on the image preview to set the focal point.',
+      type: 'string',
+      initialValue: '50% 50%',
+      components: {
+        input: CloudinaryCropInput,
       },
     }),
 

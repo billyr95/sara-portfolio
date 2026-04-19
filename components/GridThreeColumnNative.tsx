@@ -38,10 +38,9 @@ function GridItem({
     '1:1': '1/1',
   };
   const aspectRatio = aspectRatioMap[project.aspectRatio] ?? '16/9';
-  // Convert Sanity hotspot (0-1 fractions) to CSS object-position percentages
-  const objectPosition = project.thumbnailHotspot
-    ? `${Math.round(project.thumbnailHotspot.x * 100)}% ${Math.round(project.thumbnailHotspot.y * 100)}%`
-    : 'center';
+
+  // Use thumbnailPosition directly as background-position / object-position
+  const position = project.thumbnailPosition || '50% 50%';
 
   return (
     <motion.div
@@ -63,14 +62,23 @@ function GridItem({
           position: 'relative',
           overflow: 'hidden',
           cursor: 'pointer',
-          backgroundColor: '#e8e4de',
           aspectRatio,
           maxHeight: '300px',
           width: '100%',
           maxWidth: '100%',
+          // For images: use background so background-position works cleanly
+          ...(isVideo ? {} : {
+            backgroundImage: `url(${project.thumbnail.src})`,
+            backgroundSize: 'cover',
+            backgroundPosition: position,
+          }),
+          backgroundColor: '#e8e4de',
+          transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+          transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       >
-        {isVideo ? (
+        {/* Video elements still use <video> with object-position */}
+        {isVideo && (
           <video
             ref={videoRef}
             src={project.thumbnail.src}
@@ -79,10 +87,8 @@ function GridItem({
               width: '100%',
               height: '100%',
               objectFit: 'cover',
-              objectPosition,
+              objectPosition: position,
               display: 'block',
-              transform: isHovered ? 'scale(1.03)' : 'scale(1)',
-              transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
             }}
             muted
             loop
@@ -90,23 +96,9 @@ function GridItem({
             playsInline
             preload="metadata"
           />
-        ) : (
-          <img
-            src={project.thumbnail.src}
-            alt={project.title}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition,
-              display: 'block',
-              transform: isHovered ? 'scale(1.03)' : 'scale(1)',
-              transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
-            }}
-            loading="lazy"
-          />
         )}
 
+        {/* Hover overlay */}
         <div
           style={{
             position: 'absolute',
@@ -117,6 +109,7 @@ function GridItem({
           }}
         />
 
+        {/* Info */}
         <div
           style={{
             position: 'absolute',
