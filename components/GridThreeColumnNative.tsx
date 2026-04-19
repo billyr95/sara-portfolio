@@ -205,4 +205,4 @@ export default function GridThreeColumnNative({ projects, onProjectClick, isLoad
       ))}
     </div>
   );
-}
+} 
