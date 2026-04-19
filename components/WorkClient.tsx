@@ -7,6 +7,7 @@ import ProjectModal from '@/components/ProjectModal';
 import PortfolioGrid from '@/components/PortfolioGrid';
 import FullWidthGrid from '@/components/FullWidthGrid';
 import GridThreeColumn from '@/components/GridThreeColumn';
+import GridThreeColumnNative from '@/components/GridThreeColumnNative';
 import Nav from '@/components/Nav';
 import { Project } from '@/types';
 
@@ -38,6 +39,12 @@ const THREE_COL_FILTERS = new Set([
   'Styling',
   'Commercials',
   'Music Videos',
+]);
+
+// 3-col native aspect ratio grid (no infinite scroll)
+const THREE_COL_NATIVE_FILTERS = new Set([
+  'Creative Direction',
+  'Editorial',
 ]);
 
 function buildParentMap(filters: Filter[]): Record<string, string[]> {
@@ -99,6 +106,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
 
   const useFullWidth = activeFilter !== 'ALL' && FULL_WIDTH_FILTERS.has(activeFilter);
   const useThreeCol  = activeFilter !== 'ALL' && THREE_COL_FILTERS.has(activeFilter);
+  const useThreeColNative = activeFilter !== 'ALL' && THREE_COL_NATIVE_FILTERS.has(activeFilter);
   const projectCount = filteredProjects.length;
 
   const renderGrid = () => {
@@ -131,7 +139,20 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
       );
     }
 
-    // Mosaic
+    if (useThreeColNative) {
+      // 3-col native aspect ratio grid — no infinite scroll
+      return (
+        <div style={{ paddingTop: '24px' }}>
+          <GridThreeColumnNative
+            projects={filteredProjects}
+            onProjectClick={setSelectedProject}
+            isLoaded={isLoaded}
+          />
+        </div>
+      );
+    }
+
+    // Mosaic (ALL / fallback)
     return (
       <div key={gridKey}>
         <PortfolioGrid
