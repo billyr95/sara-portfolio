@@ -12,6 +12,7 @@ export interface Project {
   slug: string;
   description: string;
   aspectRatio: AspectRatio;
+  thumbnailFocalPoint?: string;
   thumbnail: MediaItem;
   media: MediaItem[];
   tags: string[];

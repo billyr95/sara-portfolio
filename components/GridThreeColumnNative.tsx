@@ -32,16 +32,15 @@ function GridItem({
 
   const isVideo = project.thumbnail.type === 'video';
 
-  // Map aspectRatio to a CSS aspect-ratio value
   const aspectRatioMap: Record<string, string> = {
     '16:9': '16/9',
     '9:16': '9/16',
     '1:1': '1/1',
   };
   const aspectRatio = aspectRatioMap[project.aspectRatio] ?? '16/9';
+  const objectPosition = project.thumbnailFocalPoint || 'center';
 
   return (
-    // Outer: centres the image vertically within the 300px row height
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={isLoaded ? { opacity: 1, y: 0 } : {}}
@@ -53,7 +52,6 @@ function GridItem({
         height: '300px',
       }}
     >
-      {/* Inner: sized by native aspect ratio, capped at 300px tall */}
       <article
         onClick={onClick}
         onMouseEnter={() => setIsHovered(true)}
@@ -63,11 +61,9 @@ function GridItem({
           overflow: 'hidden',
           cursor: 'pointer',
           backgroundColor: '#e8e4de',
-          // Maintain native ratio but never exceed 300px height
           aspectRatio,
           maxHeight: '300px',
           width: '100%',
-          // If it's portrait/square the width will shrink; if landscape it'll fill width up to 300px tall
           maxWidth: '100%',
         }}
       >
@@ -80,6 +76,7 @@ function GridItem({
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              objectPosition,
               display: 'block',
               transform: isHovered ? 'scale(1.03)' : 'scale(1)',
               transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -98,6 +95,7 @@ function GridItem({
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              objectPosition,
               display: 'block',
               transform: isHovered ? 'scale(1.03)' : 'scale(1)',
               transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -106,7 +104,6 @@ function GridItem({
           />
         )}
 
-        {/* Hover overlay */}
         <div
           style={{
             position: 'absolute',
@@ -117,7 +114,6 @@ function GridItem({
           }}
         />
 
-        {/* Info */}
         <div
           style={{
             position: 'absolute',
@@ -177,7 +173,6 @@ export default function GridThreeColumnNative({ projects, onProjectClick, isLoad
     <div
       style={{
         display: 'grid',
-        // 3 cols on desktop, 2 on tablet, 1 on mobile
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '24px',
         width: '100%',

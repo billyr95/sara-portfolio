@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity';
+import { FocalPointInput } from '../components/FocalPointInput';
 
 export default defineType({
   name: 'project',
@@ -49,6 +50,18 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // ── FOCAL POINT — controls object-position in the grid ───────────────
+    defineField({
+      name: 'thumbnailFocalPoint',
+      title: 'Thumbnail Focal Point',
+      description: 'Controls where the image is anchored inside its box on the grid.',
+      type: 'string',
+      initialValue: 'center',
+      components: {
+        input: FocalPointInput,
+      },
+    }),
+
     // ── MODAL MEDIA GALLERY — Cloudinary assets ──────────────────────────
     defineField({
       name: 'media',
@@ -70,7 +83,7 @@ export default defineType({
           ],
           preview: {
             select: { asset: 'asset' },
-            prepare({ asset }) {
+            prepare({ asset }: { asset: any }) {
               const isVideo = asset?.resource_type === 'video';
               return {
                 title: isVideo ? 'Video (Cloudinary)' : 'Image (Cloudinary)',

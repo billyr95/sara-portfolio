@@ -7,6 +7,7 @@ export const allProjectsQuery = groq`
     "slug": slug.current,
     description,
     aspectRatio,
+    thumbnailFocalPoint,
 
     // Thumbnail — single Cloudinary asset (image or video)
     "thumbnail": {
