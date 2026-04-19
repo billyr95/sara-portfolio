@@ -12,7 +12,7 @@ export interface Project {
   slug: string;
   description: string;
   aspectRatio: AspectRatio;
-  thumbnailFocalPoint?: string;
+  thumbnailHotspot?: { x: number; y: number };
   thumbnail: MediaItem;
   media: MediaItem[];
   tags: string[];

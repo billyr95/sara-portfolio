@@ -38,7 +38,10 @@ function GridItem({
     '1:1': '1/1',
   };
   const aspectRatio = aspectRatioMap[project.aspectRatio] ?? '16/9';
-  const objectPosition = project.thumbnailFocalPoint || 'center';
+  // Convert Sanity hotspot (0-1 fractions) to CSS object-position percentages
+  const objectPosition = project.thumbnailHotspot
+    ? `${Math.round(project.thumbnailHotspot.x * 100)}% ${Math.round(project.thumbnailHotspot.y * 100)}%`
+    : 'center';
 
   return (
     <motion.div

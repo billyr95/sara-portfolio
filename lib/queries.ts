@@ -7,13 +7,18 @@ export const allProjectsQuery = groq`
     "slug": slug.current,
     description,
     aspectRatio,
-    thumbnailFocalPoint,
+
+    // Hotspot from the native Sanity crop image field
+    // x and y are 0–1 fractions from the top-left corner
+    "thumbnailHotspot": thumbnailCrop.hotspot {
+      x,
+      y
+    },
 
     // Thumbnail — single Cloudinary asset (image or video)
     "thumbnail": {
       "type": select(thumbnail.resource_type == "video" => "video", "image"),
       "src": thumbnail.secure_url,
-      // For video thumbnails, Cloudinary can serve a poster by appending .jpg
       "poster": select(
         thumbnail.resource_type == "video" => thumbnail.secure_url + ".jpg",
         null

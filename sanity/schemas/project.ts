@@ -1,5 +1,4 @@
 import { defineType, defineField } from 'sanity';
-import { FocalPointInput } from '../components/FocalPointInput';
 
 export default defineType({
   name: 'project',
@@ -50,15 +49,15 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
-    // ── FOCAL POINT — controls object-position in the grid ───────────────
+    // ── THUMBNAIL CROP — native Sanity image for hotspot/crop UI ─────────
     defineField({
-      name: 'thumbnailFocalPoint',
-      title: 'Thumbnail Focal Point',
-      description: 'Controls where the image is anchored inside its box on the grid.',
-      type: 'string',
-      initialValue: 'center',
-      components: {
-        input: FocalPointInput,
+      name: 'thumbnailCrop',
+      title: 'Thumbnail Crop & Position',
+      description:
+        'Upload the same image here to set crop and focal point. Drag to reposition, pinch/scroll to zoom. This controls how the image sits inside the grid box — the Cloudinary asset above is still used for display.',
+      type: 'image',
+      options: {
+        hotspot: true, // enables the drag-to-position + zoom crop UI
       },
     }),
 
