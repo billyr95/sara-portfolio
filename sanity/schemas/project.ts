@@ -83,7 +83,8 @@ export default defineType({
           ],
           preview: {
             select: { asset: 'asset' },
-            prepare({ asset }: { asset: any }) {
+            prepare(value: Record<string, any>) {
+              const { asset } = value;
               const isVideo = asset?.resource_type === 'video';
               return {
                 title: isVideo ? 'Video (Cloudinary)' : 'Image (Cloudinary)',
