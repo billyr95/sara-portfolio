@@ -47,12 +47,7 @@ function GridItem({
       initial={{ opacity: 0, y: 16 }}
       animate={isLoaded ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: Math.min(index * 0.06, 0.4) }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '300px',
-      }}
+      style={{ display: 'contents' }}
     >
       <article
         onClick={onClick}
@@ -62,11 +57,8 @@ function GridItem({
           position: 'relative',
           overflow: 'hidden',
           cursor: 'pointer',
-          aspectRatio,
-          maxHeight: '300px',
           width: '100%',
-          maxWidth: '100%',
-          // For images: use background so background-position works cleanly
+          height: '300px',
           ...(isVideo ? {} : {
             backgroundImage: `url(${project.thumbnail.src})`,
             backgroundSize: 'cover',
@@ -172,7 +164,7 @@ export default function GridThreeColumnNative({ projects, onProjectClick, isLoad
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '24px',
         width: '100%',
-        padding: '0 40px',
+        padding: '0',
         boxSizing: 'border-box',
         alignItems: 'start',
       }}
@@ -182,14 +174,14 @@ export default function GridThreeColumnNative({ projects, onProjectClick, isLoad
         @media (max-width: 900px) {
           .grid-three-native {
             grid-template-columns: repeat(2, 1fr) !important;
-            padding: 0 24px !important;
+            padding: 0 !important;
             gap: 16px !important;
           }
         }
         @media (max-width: 560px) {
           .grid-three-native {
             grid-template-columns: 1fr !important;
-            padding: 0 16px !important;
+            padding: 0 !important;
             gap: 16px !important;
           }
         }
@@ -205,4 +197,4 @@ export default function GridThreeColumnNative({ projects, onProjectClick, isLoad
       ))}
     </div>
   );
-} 
+}

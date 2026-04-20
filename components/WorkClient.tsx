@@ -142,13 +142,11 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
     if (useThreeColNative) {
       // 3-col native aspect ratio grid — no infinite scroll
       return (
-        <div style={{ paddingTop: '24px' }}>
-          <GridThreeColumnNative
+        <GridThreeColumnNative
             projects={filteredProjects}
             onProjectClick={setSelectedProject}
             isLoaded={isLoaded}
           />
-        </div>
       );
     }
 
