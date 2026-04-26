@@ -53,7 +53,7 @@ function GridItem({
         height: '300px',
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: '#f5f3ef',
+        backgroundColor: '#ffffff',
       }}
     >
       {is916 ? (
