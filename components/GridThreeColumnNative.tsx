@@ -32,8 +32,8 @@ function GridItem({
 
   const isVideo = project.thumbnail?.type === 'video';
 
-  // Determine if this is a 16:9 asset — default to true if aspectRatio not set
-  const is169 = !project.aspectRatio || project.aspectRatio === '16:9';
+  // Only 9:16 portrait gets natural aspect ratio treatment
+  const is916 = project.aspectRatio === '9:16';
 
   const focalPoint = project.thumbnailPosition ?? '50% 50%';
 
@@ -50,20 +50,18 @@ function GridItem({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // For 16:9: show full image in its natural ratio, white space handled by the grid cell
-        // For other ratios: maintain 300px crop as before
-        height: is169 ? 'auto' : '300px',
+        height: is916 ? 'auto' : '300px',
         overflow: 'hidden',
         position: 'relative',
         backgroundColor: '#f5f3ef',
       }}
     >
-      {is169 ? (
-        // 16:9 — natural aspect ratio, full width, no crop
+      {is916 ? (
+        // 9:16 — natural aspect ratio, full height, white space on sides
         <div
           style={{
             width: '100%',
-            aspectRatio: '16 / 9',
+            aspectRatio: '9 / 16',
             overflow: 'hidden',
             position: 'relative',
             flexShrink: 0,
