@@ -35,7 +35,7 @@ function GridItem({
   // Determine if this is a 16:9 asset — default to true if aspectRatio not set
   const is169 = !project.aspectRatio || project.aspectRatio === '16:9';
 
-  const focalPoint = project.thumbnailFocalPoint ?? '50% 50%';
+  const focalPoint = project.thumbnailPosition ?? '50% 50%';
 
   return (
     <motion.div
