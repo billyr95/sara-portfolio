@@ -142,7 +142,7 @@ function GridItem({
             >
               {project.title}
             </p>
-            {project.client && (
+            {project.year && (
               <p
                 style={{
                   color: 'rgba(255,255,255,0.7)',
@@ -152,7 +152,7 @@ function GridItem({
                   textTransform: 'uppercase',
                 }}
               >
-                {project.client}
+                {project.year}
               </p>
             )}
           </div>
@@ -230,7 +230,7 @@ function GridItem({
             >
               {project.title}
             </p>
-            {project.client && (
+            {project.year && (
               <p
                 style={{
                   color: 'rgba(255,255,255,0.7)',
@@ -240,7 +240,7 @@ function GridItem({
                   textTransform: 'uppercase',
                 }}
               >
-                {project.client}
+                {project.year}
               </p>
             )}
           </div>
