@@ -50,18 +50,18 @@ function GridItem({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: is916 ? 'auto' : '300px',
+        height: '300px',
         overflow: 'hidden',
         position: 'relative',
         backgroundColor: '#f5f3ef',
       }}
     >
       {is916 ? (
-        // 9:16 — natural aspect ratio, full height, white space on sides
+        // 9:16 — full height, centered, white space on sides
         <div
           style={{
             width: '100%',
-            aspectRatio: '9 / 16',
+            height: '100%',
             overflow: 'hidden',
             position: 'relative',
             flexShrink: 0,
@@ -75,7 +75,7 @@ function GridItem({
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
+                objectFit: 'contain',
                 display: 'block',
                 transform: isHovered ? 'scale(1.03)' : 'scale(1)',
                 transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
@@ -92,8 +92,8 @@ function GridItem({
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
-                objectPosition: focalPoint,
+                objectFit: 'contain',
+                objectPosition: 'center',
                 display: 'block',
                 transform: isHovered ? 'scale(1.03)' : 'scale(1)',
                 transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
