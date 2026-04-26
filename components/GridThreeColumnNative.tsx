@@ -15,11 +15,13 @@ function GridItem({
   index,
   onClick,
   isLoaded,
+  isMobile,
 }: {
   project: Project;
   index: number;
   onClick: () => void;
   isLoaded: boolean;
+  isMobile: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
@@ -32,8 +34,12 @@ function GridItem({
 
   const isVideo = project.thumbnail?.type === 'video';
 
-  // Only 9:16 portrait gets natural aspect ratio treatment
+  // 9:16 portrait: always natural ratio (contain)
+  // 16:9 on mobile: natural 16:9 ratio
+  // everything else: fixed 300px crop
   const is916 = project.aspectRatio === '9:16';
+  const is169mobile = isMobile && (!project.aspectRatio || project.aspectRatio === '16:9');
+  const is916mobile = isMobile && is916;
 
   const focalPoint = project.thumbnailPosition ?? '50% 50%';
 
@@ -50,18 +56,98 @@ function GridItem({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: '300px',
+        height: (is916 || is169mobile || is916mobile) ? 'auto' : '300px',
         overflow: 'hidden',
         position: 'relative',
         backgroundColor: '#ffffff',
       }}
     >
-      {is916 ? (
-        // 9:16 — full height, centered, white space on sides
+      {is169mobile ? (
+        // 16:9 on mobile — natural aspect ratio, full width
         <div
           style={{
             width: '100%',
-            height: '100%',
+            aspectRatio: '16 / 9',
+            overflow: 'hidden',
+            position: 'relative',
+            flexShrink: 0,
+          }}
+        >
+          {isVideo ? (
+            <video
+              ref={videoRef}
+              src={project.thumbnail?.src}
+              poster={project.thumbnail?.poster}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                display: 'block',
+                transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+                transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+            />
+          ) : (
+            <img
+              src={project.thumbnail?.src}
+              alt={project.title}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: focalPoint,
+                display: 'block',
+                transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+                transition: 'transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+              loading="lazy"
+            />
+          )}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+              opacity: isHovered ? 1 : 0,
+              transition: 'opacity 0.3s',
+              pointerEvents: 'none',
+            }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: '16px 20px',
+              transform: isHovered ? 'translateY(0)' : 'translateY(8px)',
+              opacity: isHovered ? 1 : 0,
+              transition: 'opacity 0.3s, transform 0.3s',
+              pointerEvents: 'none',
+            }}
+          >
+            <p style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 500, margin: 0, letterSpacing: '0.02em' }}>
+              {project.title}
+            </p>
+            {project.year && (
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', margin: '2px 0 0', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                {project.year}
+              </p>
+            )}
+          </div>
+        </div>
+      ) : is916 ? (
+        // 9:16 — natural full-width on mobile, contained in 300px on desktop
+        <div
+          style={{
+            width: '100%',
+            ...(is916mobile
+              ? { aspectRatio: '9 / 16' }
+              : { height: '100%' }),
             overflow: 'hidden',
             position: 'relative',
             flexShrink: 0,
@@ -253,11 +339,20 @@ export default function GridThreeColumnNative({
   onProjectClick,
   isLoaded,
 }: GridThreeColumnNativeProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
         gap: '16px',
         width: '100%',
         padding: '0',
@@ -271,6 +366,7 @@ export default function GridThreeColumnNative({
           index={index}
           onClick={() => onProjectClick(project)}
           isLoaded={isLoaded}
+          isMobile={isMobile}
         />
       ))}
     </div>
