@@ -54,14 +54,35 @@ export default function AboutClient({ data, filters = [] }: Props) {
             top: isMobile ? 'auto' : '88px',
             borderRadius: '12px',
             overflow: 'hidden',
-            aspectRatio: isMobile ? '4/3' : '3/4',
+            // On mobile: natural aspect ratio (no fixed height). On desktop: 3/4.
+            aspectRatio: isMobile ? 'auto' : '3/4',
             backgroundColor: '#e8e4de',
           }}
         >
           {photo ? (
-            <img src={photo} alt="Sara Lukaszewski" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            <img
+              src={photo}
+              alt="Sara Lukaszewski"
+              style={{
+                width: '100%',
+                // On mobile let the image dictate its own height naturally
+                height: isMobile ? 'auto' : '100%',
+                objectFit: isMobile ? 'initial' : 'cover',
+                display: 'block',
+              }}
+            />
           ) : (
-            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(0,0,0,0.2)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>
+            <div style={{
+              width: '100%',
+              aspectRatio: '3/4',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'rgba(0,0,0,0.2)',
+              fontSize: '11px',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase' as const,
+            }}>
               Photo
             </div>
           )}

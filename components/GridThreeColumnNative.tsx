@@ -56,8 +56,8 @@ function GridItem({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: (is916 || is169mobile || is916mobile) ? 'auto' : '300px',
-        overflow: 'hidden',
+        height: (is169mobile || is916mobile) ? 'auto' : '300px',
+        overflow: (is169mobile || is916mobile) ? 'visible' : 'hidden',
         position: 'relative',
         backgroundColor: '#ffffff',
       }}
