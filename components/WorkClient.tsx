@@ -121,7 +121,7 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
     }
 
     if (useThreeCol) {
-      // 3-col grid on desktop, full-width stack on mobile
+      // No padding — full bleed on all screen sizes
       return isMobile ? (
         <FullWidthGrid
           projects={filteredProjects}
@@ -129,24 +129,21 @@ export default function WorkClient({ projects, filters }: WorkClientProps) {
           isLoaded={isLoaded}
         />
       ) : (
-        <div style={{ padding: '0 40px' }}>
-          <GridThreeColumn
-            projects={filteredProjects}
-            onProjectClick={setSelectedProject}
-            isLoaded={isLoaded}
-          />
-        </div>
+        <GridThreeColumn
+          projects={filteredProjects}
+          onProjectClick={setSelectedProject}
+          isLoaded={isLoaded}
+        />
       );
     }
 
     if (useThreeColNative) {
-      // 3-col native aspect ratio grid — no infinite scroll
       return (
         <GridThreeColumnNative
-            projects={filteredProjects}
-            onProjectClick={setSelectedProject}
-            isLoaded={isLoaded}
-          />
+          projects={filteredProjects}
+          onProjectClick={setSelectedProject}
+          isLoaded={isLoaded}
+        />
       );
     }
 
